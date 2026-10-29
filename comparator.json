@@ -1,0 +1,42 @@
+{
+  "challenge_module": "Challenge",
+  "solution_module": "Solution",
+  "theorem_names": [
+    "HardyLadder.Entry.ladder_prob_le",
+    "HardyLadder.Entry.ladder_prob_attained",
+    "HardyLadder.Entry.ladder_prob_lt_half",
+    "HardyLadder.Entry.ladder_prob_approaches_half",
+    "HardyLadder.Entry.hasDerivAt_ladder_value",
+    "HardyLadder.Entry.existsUnique_mK_root",
+    "HardyLadder.Entry.ladder_value_isGreatest_of_mK_root",
+    "HardyLadder.Entry.eq_of_ladder_value_eq_of_mK_root",
+    "HardyLadder.Entry.ladder_prob_le_of_mK_root",
+    "HardyLadder.Entry.ladder_prob_attained_of_ratio",
+    "HardyLadder.Entry.ratio_of_ladder_prob_eq_of_mK_root",
+    "HardyLadder.Entry.hardy_K1_isGreatest",
+    "HardyLadder.Entry.hardy_value_eq",
+    "HardyLadder.Entry.hardy_K1_eq_iff_quartic",
+    "HardyLadder.Entry.hardy_K1_existsUnique",
+    "HardyLadder.Entry.ladder_K1_le",
+    "HardyLadder.Entry.ladder_K1_attained",
+    "HardyLadder.Entry.ladder_K1_hardy_condition_of_eq",
+    "HardyLadder.Entry.existsUnique_cubic",
+    "HardyLadder.Entry.hardy_K2_isGreatest",
+    "HardyLadder.Entry.hardy_K2_eq_iff_inv_sq",
+    "HardyLadder.Entry.hardy_K2_eq_iff_cubic",
+    "HardyLadder.Entry.hardy_K2_existsUnique",
+    "HardyLadder.Entry.ladder_K2_le",
+    "HardyLadder.Entry.ladder_K2_attained",
+    "HardyLadder.Entry.ladder_K2_weights_of_eq",
+    "HardyLadder.Entry.minpoly_value",
+    "HardyLadder.Entry.finrank_adjoin_value",
+    "HardyLadder.Entry.irreducible_25",
+    "HardyLadder.Entry.exists_nonreal_root_minpoly_value"
+  ],
+  "definition_names": [],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ]
+}

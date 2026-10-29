@@ -1,0 +1,1462 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+# Review status: self-assessed (see the review block). Pin: Lean
+# leanprover/lean4:v4.35.0-rc2, Mathlib 065356127b1dc0016f66b7283ce0ce2c4055aa55, required in git
+# form in lakefile.toml. Comparator checks that Solution.lean proves exactly the
+# thirty statements of Challenge.lean (which imports Mathlib only and uses no definition of its
+# own) using only propext, Quot.sound and Classical.choice; the Lean kernel and the axiom audit
+# (AxiomAudit.lean) are the acceptance criteria. The pinned Mathlib definitions the statements
+# import are quoted verbatim in MATHLIB_DEFINITIONS.md and kernel-checked in DefinitionAudit.lean
+# (not compared).
+
+project:
+  name: "The two-qubit Hardy ladder: the closed form P_K*(q) and its unique maximiser for every K, Hardy's optimum at K = 1, and the optimum (8 rho^2 + rho - 11)/25 in the cubic field Q(rho) at K = 2"
+  description: >-
+    Kernel-checked optimum of Hardy's K-step ladder for two qubits (Hardy
+    1993; Hardy 1997; Boschi, Branca, De Martini and Hardy 1997), for a real
+    Schmidt state c0|00> + c1|11> and real projective settings, the
+    probabilities written out as squared real amplitudes. For every K:
+    under the ladder constraints P(A_K = 1, B_K = 1) <=
+    q^2 (1 - q^{2K})^2 / ((1 + q^2)(1 + q^{2K+1})^2), q = c1/c0, with
+    equality attained (Cereceda 2002, eqs. (18)-(19)); the probability is
+    below 1/2 (the two-qubit, real-settings case of a bound that follows in
+    every dimension from Cereceda 2016, eq. (9), with Wehner 2006), and for
+    every eps > 0 and every large enough K some state and settings exceed
+    1/2 - eps (the "(50 - delta)%" of Hardy 1997 and Boschi et al. 1997).
+    For every K >= 1 the maximiser of the closed form on (0, 1) is the
+    unique zero there of Cereceda's polynomial m_K (Cereceda 2002, eq. (20),
+    stated there without proof): the derivative of the closed form, the
+    existence and uniqueness of the zero, the maximum and its uniqueness,
+    and, over all Schmidt states and real settings, the optimum, its
+    attainment at the Schmidt ratio r, and that every optimal configuration
+    has Schmidt ratio r or 1/r (attainment at 1/r follows from the
+    uncompared symmetry). Worked instances: the K = 1 optimum is
+    phi^{-5} = (5 sqrt 5 - 11)/2 (Hardy 1993), attained at a state with
+    2 c0 c1 = 3 - sqrt 5 and only where 2 c0 c1 = 3 - sqrt 5 (Hardy's
+    condition); the K = 2 optimum is (8 rho^2 + rho - 11)/25 = 0.17455...,
+    rho the plastic number (the real root of x^3 - x - 1), attained at
+    Schmidt weights c0^2 = rho^{-1}, c1^2 = rho^{-5} (c1/c0 = rho^{-2}) and
+    only where {c0^2, c1^2} = {rho^{-1}, rho^{-5}}. The value
+    0.17455 is in print numerically; the closed form, the maximiser
+    rho^{-2}, the weights and the minimal polynomial 25x^3 + 17x^2 + 2x - 1
+    of the value were not found in the literature searched (2026-10-28) and
+    are the entry's new content. Also: the K = 2 value is not totally real
+    (its minimal polynomial has a non-real complex root). Optimality over
+    complex settings is not formalised. Thirty compared statements.
+  authors:
+    - "Stephanie Alexander"
+  license: "MIT"
+  responsible_maintainers:
+    - "Stephanie Alexander"
+
+classification:
+  arxiv: ["quant-ph", "math.NT", "math-ph"]
+  msc2020: ["81P40", "81P13", "11R16", "26C10"]
+
+sources:
+  # Each DOI was checked against https://api.crossref.org/works/<doi> on 2026-10-28 (title,
+  # authors, journal, volume, pages, year); the record of what was and was not read is given per
+  # entry. The closed form and the numerical optima were also reproduced independently in three
+  # computer-algebra derivations before formalisation (exact arithmetic modulo x^3 - x - 1; a
+  # closed-form derivation from the ladder constraints; a blind re-derivation over complex settings
+  # with Sturm-exact uniqueness of the maximiser), held by the author and not shipped with this
+  # entry. Literature search of
+  # 2026-10-28: arXiv full texts (27 papers read or grepped), forward citations (OpenAlex: 201
+  # works citing Boschi et al. 1997, Hardy 1997, Cabello 1998, Cereceda 2002, Cereceda 2016,
+  # Meng et al. 2018, Yang et al. 2019 or Chen et al. 2024; the 96 with an arXiv copy grepped),
+  # OEIS, and Google Scholar (its positive control on numeric strings failed, so its zero results
+  # are weak evidence); prover sweep of the same day in the related_formalizations comment.
+  # The id field carries the DOI and the citation; location carries the locator within the source.
+  - title: "Nonlocality for two particles without inequalities for almost all entangled states"
+    authors:
+      - "Lucien Hardy"
+    id: "https://doi.org/10.1103/PhysRevLett.71.1665; Physical Review Letters 71 (1993) 1665-1668"
+    type: "article"
+    # Crossref-verified 2026-10-28: title, author, journal, volume 71, pages 1665-1668, 13 Sep 1993.
+    # Read in a primary copy on 2026-10-28: p. 1667 gives the maximum (1/2)(5 sqrt 5 - 11)
+    # (approximately 9 %) at 2|alpha beta| = 3 - sqrt 5, for the settings constructed there.
+    location: "p. 1667"
+    relationship: "formalizes"
+    note: >-
+      Hardy's paradox for two spin-1/2 particles: for every non-maximally
+      entangled pure state there are settings for which three joint
+      probabilities vanish while a fourth is positive; p. 1667 gives the
+      maximum (1/2)(5 sqrt 5 - 11) over states, attained at
+      2|alpha beta| = 3 - sqrt 5, i.e. q + 1/q = phi^2. Statements 12-15
+      formalise this value and its maximiser on q in (0, 1) (Hardy's
+      condition is the quadratic factor q^2 - phi^2 q + 1 of statement 14's
+      quartic); statements 1-2 at K = 1 formalise the optimality over all
+      real settings at fixed state, which is Cereceda's (eq. (18) of the
+      2002 paper; Cereceda 2002 credits the K = 1 case of its eq. (16), the
+      probability as a function of the free setting, to Cereceda, Phys. Rev.
+      A 57, 659, 1998, not opened).
+      Statements 16-18 (ladder_K1_le, ladder_K1_attained,
+      ladder_K1_hardy_condition_of_eq) give the optimum over every real
+      Schmidt state and real settings, its attainment at a state with
+      2 c0 c1 = 3 - sqrt 5, and Hardy's condition
+      2 c0 c1 = 3 - sqrt 5 for every optimal configuration (statement 16 is
+      a special case of Rabelo, Zhi and Scarani 2012, every dimension). The
+      dimension-independence of the value (Rabelo, Zhi and Scarani 2012) is
+      not formalised.
+    license: "unknown"
+    author_endorsement: "not-contacted"
+  - title: "Ladder Proof of Nonlocality without Inequalities: Theoretical and Experimental Results"
+    authors:
+      - "D. Boschi"
+      - "S. Branca"
+      - "F. De Martini"
+      - "L. Hardy"
+    id: "https://doi.org/10.1103/PhysRevLett.79.2755; Physical Review Letters 79 (1997) 2755-2758"
+    type: "article"
+    # Crossref-verified 2026-10-28: title, four authors, journal, volume 79, pages 2755-2758,
+    # 13 Oct 1997. The body was not opened (abstract only). The K-step ladder constraints are
+    # taken from Cereceda 2002, which restates them; Cabello, Phys. Rev. A 58, 1687 (1998),
+    # quotes 9.0 % at K = 1 from Hardy 1993 and 17.5 % at K = 2 from Hardy 1997 and Boschi et
+    # al. 1997 (arXiv v2, p. 3), and Cereceda 2002, Table 1, computes 0.090 and 0.174 itself.
+    location: "not opened"
+    relationship: "formalizes"
+    note: >-
+      The K-step ladder (with Hardy 1997): the constraints
+      P(A_0 = 1, B_0 = 1) = 0, P(A_{k+1} = 1, B_k = 0) = 0,
+      P(A_k = 0, B_{k+1} = 1) = 0 (k < K) and the figure of merit
+      P(A_K = 1, B_K = 1), with its optimum over two-qubit states (17.5 % at
+      K = 2, as quoted by Cabello 1998; formalised here over real settings),
+      and, with Hardy 1997, the ladder's approach to one half for large K
+      ("the maximum value of P_K is (50 - delta)% which is realized for
+      K -> infinity and a state that is not quite maximally entangled", as
+      quoted by Cereceda 2002 after eq. (19)). Statements 1-2 formalise the
+      closed form of the optimised probability at fixed state for every K
+      (real Schmidt state, real settings) and its attainment; statement 4
+      that 1/2 is approached as K grows, and statement 3 that the
+      probability is below 1/2 for every K (for two qubits; Boschi et al.
+      use equal settings, unequal real settings are Cereceda 2002, eq. (18),
+      and the bound in every dimension follows from Cereceda 2016, eq. (9),
+      with Wehner
+      2006); statements 20-23 the K = 2 value on q in (0, 1),
+      stated here in closed form; and statements 24-26 the K = 2 optimum
+      over every real Schmidt state, its attainment and its optimal states.
+    license: "unknown"
+    author_endorsement: "not-contacted"
+  - title: "Ladder proof of nonlocality for two spin-half particles revisited"
+    authors:
+      - "José L. Cereceda"
+    id: "https://doi.org/10.1088/0305-4470/35/43/309; Journal of Physics A: Mathematical and General 35 (2002) 9105-9111; arXiv:quant-ph/0206015"
+    type: "article"
+    # Crossref-verified 2026-10-28: title, author, journal, volume 35, pages 9105-9111, 15 Oct 2002.
+    # Read in full (arXiv v4, the journal version) on 2026-10-28: eqs. (6)-(20), (33), Table 1
+    # (K = 1, ..., 10, three decimals; at K = 2: r1 = 0.569, r2 = 1.754, P_K^max = 0.174; 0.17455
+    # appears as 0.174), the symmetry remark below Table 1 (p. 4) and the footnote to eq. (20).
+    # The sentence after eq. (19) (p. 3) quoted for statements 3-4 was re-read verbatim from
+    # the arXiv v4 PDF on 2026-10-28.
+    location: "eqs. (6)-(9), (18)-(20), (33); Table 1; pp. 3, 4 and 6 of arXiv v4: p. 3 after eq. (19); p. 4 below Table 1 and footnote; p. 6"
+    relationship: "formalizes"
+    note: >-
+      Proves that the K-step two-qubit ladder probability is maximised over
+      the free setting by equal A and B settings (eq. (18)) and gives the
+      optimised probability at fixed Schmidt ratio in closed form, eq. (19),
+      equivalently half of eq. (33) in x = alpha/beta (attributed there to
+      Hardy 1997 and Boschi et al. 1997, as is the remark that follows it:
+      "the maximum value of P_K is (50 - delta)% which is realized for
+      K -> infinity and a state that is not quite maximally entangled",
+      formalised as statement 4 and, for two qubits, statement 3); p. 6
+      puts the maximum violation S_K = 2 P_K -> 1 at K -> infinity and
+      x -> 1; notes the symmetry P_K(alpha, beta) = P_K(beta, alpha)
+      (p. 4); characterises the maximisers r1 and r2 = 1/r1 as the
+      non-trivial real roots of
+      m_K(x) = x^{4K+3} - (1+2K) x^{2K+3} - 2K x^{2K+2} - 2K x^{2K+1}
+      - (1+2K) x^{2K} + 1 (eq. (20); "It can be shown", p. 4, without
+      proof; one root r1 < 1 < r2: cited for statements 6-8 and the
+      uniqueness statements 15 and 23); and tabulates r1, r2 and the maxima numerically for
+      K = 1, ..., 10 (Table 1: 0.090 at K = 1, 0.174 at K = 2; 0.17455
+      appears as 0.174). Statements 1-2 formalise eq. (19) as a bound and its
+      attainment for every K, with eq. (18) for unequal real settings;
+      statements 5-8 formalise the characterisation of eq. (20) on (0, 1)
+      for every K >= 1 (the m_K written out there is eq. (20) coefficient for
+      coefficient; Cereceda's variable is x = alpha/beta and ours q = c1/c0,
+      and m_K is palindromic, x^{4K+3} m_K(1/x) = m_K(x), so both readings
+      have the same zeros), with the derivative identity behind it
+      (statement 5), and statements 9-11 the resulting optimum over every
+      real Schmidt state; statements 12-15 and 20-23 give the K = 1 and
+      K = 2 maxima on (0, 1) in closed form (phi^{-5};
+      (8 rho^2 + rho - 11)/25 with the maximiser rho^{-2}). Over Q,
+      m_1(x) = (x + 1)^3 (x^4 - 3x^3 + 3x^2 - 3x + 1),
+      whose quartic factor is statement 14's, and
+      m_2(x) = (x + 1)^3 (x^2 + 1)(x^3 - 2x^2 + x - 1)(x^3 - x^2 + 2x - 1),
+      whose last factor is statement 22's cubic and whose cubic
+      x^3 - 2x^2 + x - 1 is the minimal polynomial of rho^2 (Cereceda's
+      r2 = 1.754, truncated; rho^2 = 1.75488...); the
+      paper does not factor m_2 beyond noting the triple root -1 and that
+      the other 4K - 2 roots are complex (footnote, p. 4), and the root
+      rho^{-2}, the value in Q(rho) and the Schmidt weights are not stated
+      in it (the factorisations are the library lemmas
+      HardyLadder.cerecedaM_one and HardyLadder.cerecedaM_two). The library
+      proves the symmetry as HardyLadder.ladderValue_inv (uncompared); it
+      enters the proofs of statements 3, 9, 11, 16, 18, 24 and 26 (the
+      attainment statements 10, 17 and 25 do not use it).
+    license: "unknown"
+    author_endorsement: "not-contacted"
+  - title: "Device-Independent Bounds for Hardy's Experiment"
+    authors:
+      - "Rafael Rabelo"
+      - "Law Yun Zhi"
+      - "Valerio Scarani"
+    id: "https://doi.org/10.1103/PhysRevLett.109.180401; Physical Review Letters 109 (2012) 180401; arXiv:1205.3280"
+    type: "article"
+    # Crossref-verified 2026-10-28: title, three authors, journal, volume 109, article 180401,
+    # 31 Oct 2012. arXiv v2: abstract and Theorem 2 read.
+    location: "abstract; Theorem 2 (arXiv v2)"
+    relationship: "independently-proves"
+    note: >-
+      Scoped to statement 16 (its all-dimension K = 1 optimum contains the
+      two-qubit, real-settings bound). Proves that Hardy's two-qubit value (5 sqrt 5 - 11)/2 at K = 1 is the
+      supremum over all dimensions, and that any state attaining it is
+      equivalent, up to local isometries, to the unique two-qubit state that
+      attains it (self-testing). Cited for scope and for the uniqueness of
+      the optimal state (statements 15 and 18): the K = 1 value of statements
+      12-18 is therefore the all-dimension optimum (statement 16 is a
+      special case), while the K = 2 value of statements 20-26 is
+      the optimum over two-qubit states and real settings only, and the bound
+      1/2 of statements 3-4 is formalised for two-qubit Schmidt states and
+      real settings only (its all-dimension strict form follows from
+      Cereceda 2016, eq. (9), and Wehner 2006; no-signalling boxes reach 1/2,
+      Cereceda 2015); the all-dimension K = 2 optimum is, to our knowledge
+      (search dated 2026-10-28), open (Liang, Spekkens and Wiseman 2011 give
+      the NPA upper bound 0.17456; Chen, Mal, Tabia and Liang 2024 give
+      0.17459 from level 1a of the Moroder et al. hierarchy). No
+      dimension-independence is formalised or claimed here.
+    license: "unknown"
+    author_endorsement: "not-contacted"
+  - title: "A Bigger Contradiction Between Quantum Theory and Locality for Two Particles Without Inequalities"
+    authors:
+      - "Lucien Hardy"
+    id: "https://doi.org/10.1007/978-94-011-5886-2_22; In: New Developments on Fundamental Problems in Quantum Physics (M. Ferrero, A. van der Merwe, eds.), Kluwer (1997), pp. 163-170"
+    type: "book chapter"
+    # Crossref-verified 2026-10-28: title, author, book title, pages 163-170, 1997. Not opened.
+    location: "pp. 163-170 (not opened)"
+    relationship: "formalizes"
+    note: >-
+      The origin, with Boschi et al. 1997, of the K-step ladder, of the
+      closed form restated as eq. (19) by Cereceda 2002 (his ref. [2]), of
+      the approach to one half formalised as statement 4, and of its
+      two-qubit, equal-settings bound below one half (statement 3; "As
+      shown in [2, 3], the maximum value of P_K is (50 - delta)% which is
+      realized for K -> infinity and a state that is not quite maximally
+      entangled", Cereceda 2002, after eq. (19)), and of the 17.5 % figure
+      at K = 2 quoted by Cabello 1998 (his ref. [1]). Not opened; the ladder
+      constraints and the closed form are formalised as restated by
+      Cereceda 2002.
+    license: "unknown"
+    author_endorsement: "not-contacted"
+  - title: "What's Wrong with this Temptation?"
+    authors:
+      - "N. David Mermin"
+    id: "https://doi.org/10.1063/1.2808514; Physics Today 47(6) (1994) 9-11"
+    type: "article"
+    # Crossref-verified 2026-10-28: title, author, journal, volume 47, issue 6, pages 9-11, June 1994.
+    # Read (scan) on 2026-10-28: p. 11.
+    location: "p. 11"
+    relationship: "background"
+    note: >-
+      Gives the maximum of Hardy's K = 1 probability as 1/tau^5 = 0.09017,
+      tau the golden mean, attained at p_l = p_r = 1/tau (p. 11): the
+      golden-ratio form phi^{-5} of statements 12-13 is in print here. The
+      same page states the uniqueness of the maximiser in his
+      parametrisation, "Maximizing (6) gives uniquely p_l = p_r =
+      (sqrt 5 - 1)/2 = 1/tau" (cited for statement 15).
+    license: "unknown"
+    author_endorsement: "not-contacted"
+  - title: "Identification of All Hardy-Type Correlations for Two Photons or Particles with Spin 1/2"
+    authors:
+      - "José L. Cereceda"
+    id: "https://doi.org/10.1023/A:1015520603468; Foundations of Physics Letters 14 (2001) 401-424; arXiv:quant-ph/0101143"
+    type: "article"
+    # Crossref-verified 2026-10-28: title, author, journal, volume 14, pages 401-424, Oct 2001.
+    location: "Sec. 4"
+    relationship: "background"
+    note: >-
+      States Hardy's K = 1 maximum as tau^{-5}, tau the golden mean
+      (1 + sqrt 5)/2, approximately 0.090 17: the phi^{-5} form of statements
+      12-13 is in print here.
+    license: "unknown"
+    author_endorsement: "not-contacted"
+  - title: "Ladder proof of nonlocality without inequalities and without probabilities"
+    authors:
+      - "Adán Cabello"
+    id: "https://doi.org/10.1103/PhysRevA.58.1687; Physical Review A 58 (1998) 1687-1693; arXiv:quant-ph/9712055"
+    type: "article"
+    # Crossref-verified 2026-10-28: title, author, journal, volume 58, pages 1687-1693, Sep 1998.
+    location: "abstract; Sec. 2 (arXiv v2, p. 3)"
+    relationship: "background"
+    note: >-
+      Quotes the two-qubit maximum of the K = 1 probability as 9.0 % from
+      Hardy 1993, and of the K = 2 ladder probability as 17.5 %, from Hardy
+      1997 and Boschi et al. 1997 (numerical; no closed form); credits to
+      Hardy 1997 and Boschi et al. 1997 that the ladder proof "goes through
+      for 50% of pairs at the most" (abstract) and that "As K tends to
+      infinity PK tends to 50%" (Sec. 2), cited for statement 4.
+    license: "unknown"
+    author_endorsement: "not-contacted"
+  - title: "Hardy's paradox for multisetting high-dimensional systems"
+    authors:
+      - "Hui-Xian Meng"
+      - "Jie Zhou"
+      - "Zhen-Peng Xu"
+      - "Hong-Yi Su"
+      - "Ting Gao"
+      - "Feng-Li Yan"
+      - "Jing-Ling Chen"
+    id: "https://doi.org/10.1103/PhysRevA.98.062103; Physical Review A 98 (2018) 062103; arXiv:1805.04651"
+    type: "article"
+    # Crossref-verified 2026-10-28: title, seven authors, journal, volume 98, article 062103,
+    # 3 Dec 2018.
+    location: "Table I"
+    relationship: "background"
+    note: >-
+      Table I lists numerically the two-qubit maxima of the ladder with
+      k = K + 1 settings, to five digits: 0.09017 (K = 1), 0.17455 (K = 2), 0.23126,
+      0.27088, 0.29995 (numerical; no closed form). The same 0.17455 appears in
+      Yang et al., Phys. Rev. A 99, 032103 (2019), Supplement Table I.
+    license: "unknown"
+    author_endorsement: "not-contacted"
+  - title: "Hardy-type paradoxes for an arbitrary symmetric bipartite Bell scenario"
+    authors:
+      - "Kai-Siang Chen"
+      - "Shiladitya Mal"
+      - "Gelo Noel M. Tabia"
+      - "Yeong-Cherng Liang"
+    id: "https://doi.org/10.1103/PhysRevA.109.042206; Physical Review A 109 (2024) 042206; arXiv:2311.02045"
+    type: "article"
+    # Crossref-verified 2026-10-28: title, four authors, journal, volume 109, article 042206,
+    # 8 Apr 2024.
+    location: "Table I(a), row Boschi [15] (arXiv v2)"
+    relationship: "background"
+    note: >-
+      For the ladder with three settings per party (K = 2) lists the
+      numerical lower bound 0.17455 and an upper bound 0.17459 from level 1a
+      of the SDP hierarchy of Moroder et al. (PRL 111, 030501, 2013), not
+      marked tight; Liang, Spekkens and Wiseman (Phys. Rep. 506, 1, 2011,
+      Sec. IV.E) give the tighter NPA bound 0.17456. The all-dimension K = 2
+      optimum is bracketed numerically but open. Cited for scope; nothing
+      beyond two qubits is formalised here.
+    license: "unknown"
+    author_endorsement: "not-contacted"
+  - title: "Chained Clauser-Horne-Shimony-Holt inequality for Hardy's ladder test of nonlocality"
+    authors:
+      - "José Luis Cereceda"
+    id: "https://doi.org/10.1007/s11128-015-1217-4; Quantum Information Processing 15 (2016) 1779-1792; arXiv:1508.06317"
+    type: "article"
+    # Crossref-verified 2026-10-28: title, author, journal, volume 15, pages 1779-1792, Apr 2016.
+    # arXiv v1 read: eqs. (8)-(9) (p. 3) and p. 4.
+    location: "eqs. (8)-(9); p. 4 (arXiv v1)"
+    relationship: "independently-proves"
+    note: >-
+      Scoped to statement 3. Proves from no-signalling alone that the
+      ladder constraints give CHSH_K = 2K + 4 P_K (eq. (8)), and with
+      Wehner's chained-CHSH Tsirelson bound (any state, +-1 observables) the
+      upper limit P_K <= L_K = (1/4)[2(K+1) cos(pi/(2(K+1))) - 2K]
+      (eq. (9)), with L_K -> 0.5. Cereceda states his setting as two
+      qubits; the following are inferences drawn here, not his words: since
+      the cosine is below 1, L_K < 1/2 for every K, and since neither step
+      uses the dimension, the strict bound of statement 3 holds in every
+      dimension for +-1 observables. Statement 3 is the two-qubit,
+      real-settings, Schmidt-form case, proved here from the
+      closed form of statement 1, not through the chained-CHSH bound. At
+      K = 2, L_2 = (3 sqrt 3 - 4)/4, about 0.299, which is not tight. Its
+      p. 4 also states the two-qubit limit 0.5, "realized for K -> infinity
+      and a state that is close to maximally entangled (x -> 1) [3, 4]"
+      (cited for statement 4), and prints the q-form of the closed form,
+      P_K(x) = x^2/(1 + x^2) ((1 - x^{2K})/(1 + x^{2K+1}))^2. Nothing beyond
+      two qubits is formalised here.
+    license: "unknown"
+    author_endorsement: "not-contacted"
+  - title: "Tsirelson bounds for generalized Clauser-Horne-Shimony-Holt inequalities"
+    authors:
+      - "Stephanie Wehner"
+    id: "https://doi.org/10.1103/PhysRevA.73.022110; Physical Review A 73 (2006) 022110; arXiv:quant-ph/0510076"
+    type: "article"
+    # Crossref-verified 2026-10-28: title, author, journal, volume 73, article 022110, 14 Feb 2006.
+    # arXiv v2 abstract read.
+    location: "abstract"
+    relationship: "background"
+    note: >-
+      Proves that for any shared entangled state and +-1 observables the
+      chained CHSH expression is at most 2n cos(pi/(2n)). With Cereceda
+      2016, eqs. (8)-(9), it yields (an inference drawn here) the strict
+      bound P_K < 1/2 in every dimension,
+      of which statement 3 is the two-qubit, real-settings case. Not
+      formalised here.
+    license: "unknown"
+    author_endorsement: "not-contacted"
+  - title: "Causal communication constraint for two qubits in Hardy's ladder proof of non-locality"
+    authors:
+      - "José Luis Cereceda"
+    id: "https://doi.org/10.12988/astp.2015.5456; Advanced Studies in Theoretical Physics 9 (2015) 433-448"
+    type: "article"
+    # Crossref-verified 2026-10-28: title, author, journal, volume 9, pages 433-448, 2015.
+    # Open access; abstract read.
+    location: "abstract"
+    relationship: "background"
+    note: >-
+      Shows that the maximum success probability of the ladder allowed by a
+      generalized (no-signalling) probabilistic theory reaches 50 % for every
+      K, so the strictness of statement 3 is a quantum effect. Cited for
+      scope; not formalised here.
+    license: "unknown"
+    author_endorsement: "not-contacted"
+  - title: "Specker's parable of the overprotective seer: A road to contextuality, nonlocality and complementarity"
+    authors:
+      - "Yeong-Cherng Liang"
+      - "Robert W. Spekkens"
+      - "Howard M. Wiseman"
+    id: "https://doi.org/10.1016/j.physrep.2011.05.001; Physics Reports 506 (2011) 1-39; arXiv:1010.1273"
+    type: "article"
+    # Crossref-verified 2026-10-28: title, three authors, journal, volume 506, pages 1-39, Sep 2011.
+    # arXiv v4, Sec. IV.E (PDF pp. 19-20) read.
+    location: "Sec. IV.E (arXiv v4)"
+    relationship: "background"
+    note: >-
+      For the scenario they state to be "entirely equivalent to the proof of
+      nonlocality due to Boschi et al." with three settings (K = 2), report
+      the two-qubit pHardy of about 0.17455 against the quantum upper bound
+      pHardy <= 0.17456 obtained with the NPA hierarchy, and that with more
+      settings the value "asymptotes to 50%". Cited for scope: the
+      all-dimension K = 2 optimum is open; not formalised here.
+    license: "unknown"
+    author_endorsement: "not-contacted"
+  - title: "Cabello's nonlocality for generalized three-qubit GHZ states"
+    authors:
+      - "José Luis Cereceda"
+    id: "https://doi.org/10.1007/s40509-016-0093-7; Quantum Studies: Mathematics and Foundations 4 (2017) 205-215; arXiv:1609.04763"
+    type: "article"
+    # Crossref-verified 2026-10-28: title, author, journal, volume 4, issue 3, pages 205-215.
+    # arXiv v2, Table 1 read.
+    location: "Table 1 (arXiv v2)"
+    relationship: "background"
+    note: >-
+      Tabulates the two-qubit ladder maxima P_K^max to six digits for
+      K = 1, ..., 10: 0.090169 (K = 1) and 0.174550 (K = 2), numerically (no
+      closed form).
+    license: "unknown"
+    author_endorsement: "not-contacted"
+  - title: "Generalized probability for Hardy's nonlocality contradiction"
+    authors:
+      - "José L. Cereceda"
+    id: "https://doi.org/10.1103/PhysRevA.57.659; Physical Review A 57 (1998) 659-662"
+    type: "article"
+    # Crossref-verified 2026-10-28: title, author, journal, volume 57, pages 659-662, 1998.
+    # Body not opened.
+    location: "not opened"
+    relationship: "background"
+    note: >-
+      Credited by Cereceda 2002 with the K = 1 case of its eq. (16), the
+      probability as a function of the free setting before maximisation.
+      Not opened; cited for attribution only.
+    license: "unknown"
+    author_endorsement: "not-contacted"
+  - title: "Stronger Hardy-type paradox based on the Bell inequality and its experimental test"
+    authors:
+      - "Mu Yang"
+      - "Hui-Xian Meng"
+      - "Jie Zhou"
+      - "Zhen-Peng Xu"
+      - "Ya Xiao"
+      - "Kai Sun"
+      - "Jing-Ling Chen"
+      - "Jin-Shi Xu"
+      - "Chuan-Feng Li"
+      - "Guang-Can Guo"
+    id: "https://doi.org/10.1103/PhysRevA.99.032103; Physical Review A 99 (2019) 032103; arXiv:1809.04289"
+    type: "article"
+    # Crossref-verified 2026-10-28: title, ten authors, journal, volume 99, article 032103,
+    # 5 Mar 2019.
+    location: "Supplement, Table I (arXiv v1)"
+    relationship: "background"
+    note: >-
+      Lists 0.17455 for the two-qubit K = 2 ladder, captioned as the
+      numerical result of Boschi et al. 1997 (numerical; no closed form).
+    license: "unknown"
+    author_endorsement: "not-contacted"
+  - title: "Cabello's nonlocality argument for multisetting high-dimensional systems and its experimental test"
+    authors:
+      - "Ming Yang"
+      - "Dongkai Zhang"
+      - "Lixiang Chen"
+    id: "https://doi.org/10.1103/PhysRevA.110.012441; Physical Review A 110 (2024) 012441; arXiv:2403.07417"
+    type: "article"
+    # Crossref-verified 2026-10-28: title, three authors, journal, volume 110, article 012441,
+    # 15 Jul 2024. arXiv text, Table I read.
+    location: "Table I (k = 3)"
+    relationship: "background"
+    note: >-
+      Lists the two-qubit Hardy fraction 0.174550 for three settings per
+      party (K = 2), numerically (no closed form).
+    license: "unknown"
+    author_endorsement: "not-contacted"
+  - title: "The two-step (K = 2) two-qubit Hardy ladder optimum in closed form: maximiser q = rho^{-2}, value (8 rho^2 + rho - 11)/25 with minimal polynomial 25x^3 + 17x^2 + 2x - 1, optimal Schmidt weights {rho^{-1}, rho^{-5}}"
+    authors:
+      - "Stephanie Alexander"
+    id: "this repository: statements 20-22 and 24-30 of Challenge.lean"
+    type: "this formalization"
+    location: "HardyLadder/HardyK2.lean, HardyLadder/Minpoly.lean, HardyLadder/Optimum.lean, HardyLadder/TotallyReal.lean"
+    relationship: "other"
+    note: >-
+      The closed forms are presented in this repository; they were not found
+      in the literature and repositories searched (search dated 2026-10-28;
+      a search result, not a proof of absence; the bodies of Hardy 1997 and
+      Boschi et al. 1997 were not opened). In print: the numerical value
+      (17.5 % quoted by Cabello 1998 from Hardy 1997 and Boschi et al. 1997;
+      0.174 in Cereceda 2002, Table 1, where 0.17455 appears as 0.174;
+      0.17455 in Meng et al. 2018, Table I; 0.174550 in Cereceda 2017,
+      Table 1, and in Yang, Zhang and Chen 2024, Table I) and the maximiser r1 = 0.569 (Cereceda 2002, Table 1), a root
+      of m_2(x) (eq. (20)); the root 0.5698... itself is OEIS A357471, which
+      mentions neither the plastic number nor Hardy's ladder. The uniqueness
+      of the maximiser (statement 23, and statements 6-8 for every K) is
+      stated in Cereceda 2002, p. 4 ("It can be shown"), without proof, and
+      is credited there; no printed proof of it for K >= 2 was found in the
+      literature searched (search dated 2026-10-29: Cereceda 2002, 2015,
+      2016 and 2017; Meng et al. 2018; Yang et al. 2019; Yang, Zhang and
+      Chen 2024; Chen, Mal, Tabia and Liang 2024; Barbieri, De Martini, Di
+      Nepi and Mataloni 2004, arXiv:quant-ph/0406156; Cabello 1998; none
+      prints a proof; where they treat K >= 2 they state the characterisation
+      (Cereceda 2002) or the existence of a maximiser without proof, or give
+      numerical values; the bodies of Hardy 1997 and Boschi
+      et al. 1997 were not opened), so the proof of statements 5-8 given
+      here (the derivative identity and m_K = 1 - x^{2K} g_K with g_K and
+      g_K' positive on [0, 1]) is presented in this repository; the
+      statement is Cereceda's. That the value is not totally real
+      (statement 30) is an elementary consequence of statement 27: the cubic
+      has discriminant -23^3 < 0, so one real root.
+    license: "MIT"
+    author_endorsement: "participated"
+
+related_formalizations:
+  # Prover sweep of 2026-10-28 (HEADs of the day): Mathlib master and the pin, QuAIR/Lean-QIT,
+  # physical-superintelligence/oqp-batch-2026, openai/math, leanprover-community/physlib,
+  # Timeroot/Lean-QuantumInfo, coq-quantum/CoqQ, inQWIRE/QuantumLib, Isabelle/AFP, and a
+  # GitHub-wide code search for Hardy's paradox and the Hardy ladder (Lean, Coq, Isabelle). It
+  # found the three Lean formalisations of Hardy's K = 1 paradox listed below and no formal
+  # statement of the ladder bound, of the K = 1 maximality or uniqueness, or of anything at K = 2.
+  # A second sweep on 2026-10-29, at that day's heads of the same targets (openai/math and the AFP
+  # through their contents lists, tree listings and code search) and adding the Lean library
+  # the-omega-institute/trureturing, found no formal statement of statements 5-11 or 30. That
+  # library (dev 52ce13dc, 2026-10-29) has Hardy-type modules on other arguments: the temporal
+  # Hardy maximum 1/4 with spin measurements
+  # (D5/S3/Quantum/Contextuality/TemporalHardySpinAttainment.lean), a refuted no-signalling
+  # conjecture for a relaxed multipartite Hardy test, and a refutation of the three-qubit 9/64
+  # conjecture of Cereceda 2017 (D5/S3/Quantum/Entanglement/ThreeQubitCabelloRefutation.lean);
+  # none concerns the two-qubit ladder or Cereceda 2002.
+  # The nearest formal neighbours are CHSH/Tsirelson developments (Mathlib
+  # Mathlib/Algebra/Star/CHSH.lean, Lean-QIT QIT/Nonlocality/Tsirelson.lean, AFP
+  # Projective_Measurements/CHSH_Inequality.thy and the AFP entry TsirelsonBound (Tsirelson.thy),
+  # and CoqQ src/QIT/commutator.v (CHSH_inequality, CHSH_violation)); none states a Hardy or
+  # ladder bound.
+  - id: "Mathlib Mathlib/NumberTheory/Real/GoldenRatio.lean (Real.goldenRatio)"
+    relationship: "builds-on"
+    note: >-
+      The K = 1 value is stated as phi^{-5} with Mathlib's golden ratio
+      phi = (1 + sqrt 5)/2 (Real.goldenRatio, file authors Anatole Dedecker,
+      Alexey Soloyev, Junyan Xu and Kamila Szewczyk; quoted in
+      MATHLIB_DEFINITIONS.md); statement 13 identifies it with
+      (5 sqrt 5 - 11)/2. The facts about it used are its definition,
+      phi^2 = phi + 1 (Real.goldenRatio_sq), 0 < phi (Real.goldenRatio_pos),
+      1 < phi (Real.one_lt_goldenRatio), phi < 2 (Real.goldenRatio_lt_two)
+      and phi /= 0 (Real.goldenRatio_ne_zero).
+  - id: "Mathlib Mathlib/FieldTheory/Minpoly/Basic.lean (minpoly), Mathlib/FieldTheory/Minpoly/Field.lean (minpoly.eq_of_irreducible_of_monic) and Mathlib/FieldTheory/IntermediateField/Adjoin (adjoin, adjoin.finrank)"
+    relationship: "builds-on"
+    note: >-
+      Statements 27-30 are stated with Mathlib's minimal polynomial (and
+      statement 28 with intermediate fields); the proofs use
+      minpoly.eq_of_irreducible_of_monic, Gauss's lemma
+      (Monic.irreducible_iff_irreducible_map_fraction_map), reduction modulo
+      2 (Monic.irreducible_of_irreducible_map), and for statement 30 the
+      count of roots of a separable polynomial in an algebraically closed
+      field (card_rootSet_eq_natDegree, with Irreducible.separable).
+  - id: "Mathlib Mathlib/NumberTheory/NumberField/InfinitePlace/TotallyRealComplex.lean (NumberField.IsTotallyReal) and InfinitePlace/Embeddings.lean (range_eval_eq_rootSet_minpoly)"
+    relationship: "builds-on"
+    note: >-
+      The uncompared library lemmas HardyLadder.totallyReal_subfield_eq_bot
+      and HardyLadder.mem_bot_of_isTotallyReal_adjoin (every totally real
+      subfield of a number field of degree 3 containing a root of
+      x^3 - x - 1 is Q) are stated with Mathlib's IsTotallyReal (every
+      infinite place real) and proved through the correspondence between
+      embeddings into C and roots of the minimal polynomial, the count of
+      roots of a separable polynomial in an algebraically closed field
+      (card_rootSet_eq_natDegree), and
+      IntermediateField.isSimpleOrder_of_finrank_prime.
+  - id: "Mathlib Mathlib/Analysis/Calculus/Deriv (HasDerivAt and its algebra), Mathlib/Analysis/Calculus/Deriv/MeanValue.lean (strictMonoOn_of_deriv_pos, strictAntiOn_of_deriv_neg) and Mathlib/Topology/Order/IntermediateValue.lean (intermediate_value_Ioo')"
+    relationship: "builds-on"
+    note: >-
+      Statement 5 is stated with Mathlib's HasDerivAt and proved by
+      composing hasDerivAt_pow, HasDerivAt.fun_mul, fun_add, fun_sub, fun_pow
+      and fun_div; statements 6-8 use strictMonoOn_of_deriv_pos and
+      strictAntiOn_of_deriv_neg on [0, 1], (0, r] and [r, 1), and the
+      intermediate value theorem intermediate_value_Ioo' for the zero of
+      m_K.
+  - id: "https://github.com/zblore/csd-lean4/blob/1aa340c28dae7817b10d0db47d05190613c38aee/CsdLean4/Empirical/QM/Hardy.lean"
+    relationship: "independent"
+    note: >-
+      Prior Lean 4 formalisation of Hardy's K = 1 paradox: the local-realism
+      no-go (CSD.Empirical.Hardy.no_lhv_hardy), realisations with probability
+      1/12 and with the golden-ratio state, and attainment of the value
+      (CSD.Empirical.Hardy.HardyQMMax.hardyMax_probability_eq: probability
+      (5 sqrt 5 - 11)/2; hardyMax_value: 1/(5 phi + 3) = (5 sqrt 5 - 11)/2).
+      It states no upper bound (hardyMax_probability_eq evaluates the
+      probability at the golden-ratio state, which the repository's prose
+      calls the maximum), and nothing on uniqueness, the ladder bound or
+      K = 2; statements 1-11, the upper-bound half
+      of 12, 14-16 and 18-30 here are not in it (statement 17, the attainment
+      of the K = 1 value, overlaps hardyMax_probability_eq, as does the
+      attainment half of 12). At HEAD 329276a5 (2026-10-28) no Hardy file had
+      changed; the repository also has CsdLean4/Empirical/CSD/HardyVolume.lean
+      (hardy_max_volume_probability: the same value as a Kähler volume, an
+      evaluation), CsdLean4/Empirical/CSD/Hardy.lean (no_csd_hardy_assignment,
+      a CSD-model no-go), CsdLean4/LF4/HardyKahler.lean (Born-frequency
+      convergence for the 1/12 state, hardy_freq_convergence) and
+      CsdLean4/Mathlib/Probability/ChainedBell.lean (the
+      Colbeck-Renner chained walk; a no-signalling marginal bound; not the
+      ladder, and not the Braunstein-Caves inequality).
+  - id: "https://github.com/primaryhosting/brockian-mathematics/tree/29426ff65b6f1fd68d594e529632eb79b5be3089/aristotle/mined_lemmas/QI_hardy_paradox"
+    relationship: "independent"
+    note: >-
+      Lean 4 files (headers: "Verification: pending") for Hardy's K = 1
+      paradox: the local-realism no-go (QI.hardy_paradox, QI.hardy_paradox_measure,
+      QI.lhv_hardy_zero) and the probability 1/12 (QI.hardy_pos_A0_B0, for
+      the state (|00> + |01> + |10> - 3|11>)/sqrt 12; the docstring of
+      QI.hardy_paradox uses |00> + |01> + |10>). No optimum, no ladder.
+  - id: "https://github.com/inventor1975/ZTL/blob/77a6890e871def3cb13f9e7114e4bd9dd926fdd3/lean/Hardy.lean"
+    relationship: "independent"
+    note: >-
+      Self-contained Lean 4 file (no Mathlib) checking the 1/12 instance of
+      Hardy's K = 1 paradox in integer arithmetic (Hardy.contested_occurs,
+      Hardy.certainties). No optimum, no ladder.
+
+status:
+  scope: >-
+    Formalized, thirty compared theorems in namespace HardyLadder.Entry
+    (Challenge.lean, proved in Solution.lean by the library HardyLadder).
+    Statements 1-2 model the ladder for a real two-qubit state in Schmidt
+    form with real projective settings, the probabilities written out as
+    squared real amplitudes: ladder_prob_le gives, for c0, c1 > 0 with
+    c0^2 + c1^2 = 1 and angles a b : N -> R satisfying the K-step ladder
+    constraints (stated as vanishing squared amplitudes),
+    (c0 cos a_K cos b_K + c1 sin a_K sin b_K)^2 <= P_K*(c1/c0);
+    ladder_prob_attained gives angles satisfying the constraints with
+    equality. Statements 3-4, every K, in the same setting:
+    ladder_prob_lt_half gives, under exactly the hypotheses of
+    ladder_prob_le, (c0 cos a_K cos b_K + c1 sin a_K sin b_K)^2 < 1/2;
+    ladder_prob_approaches_half gives, for every eps > 0, some K0 : N such
+    that for every K >= K0 there are c0, c1 > 0 with c0^2 + c1^2 = 1 and
+    angles a b : N -> R satisfying the K-step constraints with
+    1/2 - eps < (c0 cos a_K cos b_K + c1 sin a_K sin b_K)^2. Statements
+    5-11, every K, with Cereceda's
+    m_K(x) = x^{4K+3} - (1 + 2K) x^{2K+3} - 2K x^{2K+2} - 2K x^{2K+1}
+    - (1 + 2K) x^{2K} + 1 written out in 5-9 and 11 (K cast to R in the
+    coefficients):
+    hasDerivAt_ladder_value is, for q > 0, HasDerivAt P_K*
+    (2q (1 - q^{2K}) m_K(q) / ((1 + q^2)^2 (1 + q^{2K+1})^3)) q;
+    existsUnique_mK_root is, for K >= 1, the existence and uniqueness of
+    r in (0, 1) with m_K(r) = 0; for K >= 1 and such r,
+    ladder_value_isGreatest_of_mK_root is IsGreatest (P_K* '' Ioo 0 1)
+    (P_K*(r)), eq_of_ladder_value_eq_of_mK_root gives q = r for every
+    q in (0, 1) with P_K*(q) = P_K*(r), ladder_prob_le_of_mK_root is the
+    bound (c0 cos a_K cos b_K + c1 sin a_K sin b_K)^2 <= P_K*(r) under the
+    K-step constraints for every Schmidt state (either order of c0, c1),
+    and ratio_of_ladder_prob_eq_of_mK_root gives c1/c0 = r or
+    c1/c0 = r^{-1} whenever it is attained; ladder_prob_attained_of_ratio
+    gives, for every K and r > 0, c0, c1 with c1/c0 = r and angles
+    satisfying the K-step constraints with the squared amplitude equal to
+    P_K*(r). Statements 12-18 (K = 1): hardy_K1_isGreatest is
+    IsGreatest (P_1* '' Ioo 0 1) (phi^{-1} ^ 5); hardy_value_eq is
+    phi^{-1} ^ 5 = (5 sqrt 5 - 11)/2; hardy_K1_eq_iff_quartic is, for
+    q in (0, 1), P_1*(q) = phi^{-5} iff q^4 - 3q^3 + 3q^2 - 3q + 1 = 0;
+    hardy_K1_existsUnique is the uniqueness of the maximiser; ladder_K1_le
+    is the bound (c0 cos a_1 cos b_1 + c1 sin a_1 sin b_1)^2 <= phi^{-1} ^ 5
+    under the one-step constraints for every Schmidt state;
+    ladder_K1_attained gives c0, c1 with 2 c0 c1 = 3 - sqrt 5 and angles
+    attaining it; ladder_K1_hardy_condition_of_eq gives
+    2 c0 c1 = 3 - sqrt 5 whenever it is attained. Statements 19-26
+    (K = 2): existsUnique_cubic is the existence and uniqueness of a real
+    rho with rho^3 = rho + 1; the remaining seven take such a rho as a
+    hypothesis: hardy_K2_isGreatest is
+    IsGreatest (P_2* '' Ioo 0 1) ((8 rho^2 + rho - 11)/25);
+    hardy_K2_eq_iff_inv_sq is, for q in (0, 1), P_2*(q) = that value iff
+    q = rho^{-1} ^ 2; hardy_K2_eq_iff_cubic is the same iff
+    q^3 - q^2 + 2q - 1 = 0; hardy_K2_existsUnique the uniqueness of the
+    maximiser; ladder_K2_le is the bound (8 rho^2 + rho - 11)/25 under the
+    two-step constraints for every Schmidt state; ladder_K2_attained gives
+    c0, c1 with c0^2 = rho^{-1}, c1^2 = rho^{-1} ^ 5 and angles attaining
+    it; ladder_K2_weights_of_eq gives (c0^2 = rho^{-1} and
+    c1^2 = rho^{-1} ^ 5) or (c0^2 = rho^{-1} ^ 5 and c1^2 = rho^{-1})
+    whenever it is attained. Statements 27-30: minpoly_value is
+    minpoly Q ((8 rho^2 + rho - 11)/25) =
+    X^3 + C (17/25) X^2 + C (2/25) X - C (1/25); finrank_adjoin_value is
+    Module.finrank Q (IntermediateField.adjoin Q {(8 rho^2 + rho - 11)/25}) = 3;
+    irreducible_25 is Irreducible (25 X^3 + 17 X^2 + 2 X - 1 : Q[X]);
+    exists_nonreal_root_minpoly_value gives z : C with z.im /= 0 and
+    aeval z (minpoly Q ((8 rho^2 + rho - 11)/25)) = 0 (read with
+    statement 27, which identifies that polynomial as the monic cubic: the
+    value is not totally real). Given statements 12 and 20, statements
+    14-15 and 22-23 follow from the K = 1 and K = 2 cases of statements 6-8
+    through the factorisations of m_1 and m_2 (library lemmas
+    cerecedaM_one, cerecedaM_two; the other factors have no zero in
+    (0, 1)), and statement 23 also follows directly from statement 21,
+    since rho^{-2} is in (0, 1); they are proved separately.
+    No physical claim is part of the compared statements: they assert
+    inequalities, identities and a derivative of real expressions and
+    facts about a polynomial over Q and a cubic number field. The library
+    also proves, uncompared: the symmetry P_K*(1/q) = P_K*(q) and
+    P_K*(1) = 0; the limit P_K*(q) -> q^2/(1 + q^2) as K -> infinity for
+    fixed q in (0, 1); m_K(x) = 1 - x^{2K} g_K(x) with g_K and g_K'
+    positive on [0, 1], and the factorisations of m_1 and m_2; that every
+    totally real subfield of a number field of degree 3 containing a root
+    of x^3 - x - 1 is Q (some embedding sends that root off the real line);
+    rho^{-1} + rho^{-5} = 1; the bounds 5/4 < rho < 4/3; the symmetric form
+    of the closed form in c0, c1; the one-variable bounds in s = q + 1/q;
+    the factorisations of the K = 1 quartic over Q(phi) and of the K = 2
+    cofactor over Q(rho); and the irreducibility of x^3 - 2x^2 - 17x - 25
+    over Z.
+  sorry_count: 0  # Solution and library; the thirty Challenge placeholders are the comparison surface
+  sorry_in_definitions: 0
+  axioms: ["propext", "Classical.choice", "Quot.sound"]
+  main_results:
+    - declaration: "HardyLadder.Entry.ladder_prob_le"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.ladder_prob_attained"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.ladder_prob_lt_half"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.ladder_prob_approaches_half"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.hasDerivAt_ladder_value"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.existsUnique_mK_root"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.ladder_value_isGreatest_of_mK_root"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.eq_of_ladder_value_eq_of_mK_root"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.ladder_prob_le_of_mK_root"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.ladder_prob_attained_of_ratio"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.ratio_of_ladder_prob_eq_of_mK_root"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.hardy_K1_isGreatest"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.hardy_value_eq"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.hardy_K1_eq_iff_quartic"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.hardy_K1_existsUnique"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.ladder_K1_le"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.ladder_K1_attained"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.ladder_K1_hardy_condition_of_eq"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.existsUnique_cubic"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.hardy_K2_isGreatest"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.hardy_K2_eq_iff_inv_sq"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.hardy_K2_eq_iff_cubic"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.hardy_K2_existsUnique"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.ladder_K2_le"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.ladder_K2_attained"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.ladder_K2_weights_of_eq"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.minpoly_value"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.finrank_adjoin_value"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.irreducible_25"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+    - declaration: "HardyLadder.Entry.exists_nonreal_root_minpoly_value"
+      file: "Solution.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+
+automation:
+  methods:
+    - method: "agent"
+      models: ["Anthropic Claude Fable 5.1 (claude-fable-5-1, 2026)", "Anthropic Claude Opus 5.5 (claude-opus-5-5, 2026)"]
+      framework: "Claude Code"
+      tool_setup: >-
+        AI-assisted proof drafting iterated against lake build under the
+        author's direction: statements fixed from the author's prior
+        computer-algebra derivations (the closed form from the ladder
+        constraints; exact arithmetic modulo x^3 - x - 1; a blind
+        re-derivation with Sturm-exact uniqueness), the polynomial
+        certificates (the factorisations in s and the linear-combination
+        multipliers) computed with sympy, proofs drafted, built, first error
+        read, fixed, rebuilt. Every theorem kernel-checked and axiom-audited
+        (AxiomAudit.lean: #print axioms for all 160 library theorems and the
+        thirty compared theorems). Statements 1-2, 12-15, 19-23 and 27-29 and
+        the first seven library modules were drafted with Claude Fable 5.1;
+        HardyLadder/Optimum.lean, HardyLadder/OneHalf.lean,
+        HardyLadder/Maximiser.lean, the last section of
+        HardyLadder/TotallyReal.lean, statements 3-11, 16-18, 24-26 and 30,
+        and later text edits with Claude Opus 5.5.
+      cost:
+        wall_time: >-
+          Package, 2026-10-28: eight lake build invocations, about 1.5 hours,
+          for the first six modules (the real root of x^3 - x - 1,
+          golden-ratio identities, the parallel-vector chain and AM-GM bound
+          with the arctan attainment, the one-variable optimisations in
+          s = q + 1/q at K = 1 and K = 2, the minimal polynomial by reduction
+          modulo 2) and the comparison surface (the Challenge, Solution and
+          both audit files compiled on the first build); then two standalone
+          elaborations and one full build, about 20 minutes, for the
+          totally-real module (its two field-level theorems are uncompared
+          library lemmas). Later the
+          same day: one standalone elaboration and one full build for the
+          module HardyLadder/Optimum.lean (green on the first attempt), and
+          two full builds after the docstring and comment edits. Then: one
+          full build and one unsandboxed comparator run.
+          The below-one-half and end-to-end K = 1, K = 2 statements
+          (statements 3-4, 16-18 and 24-26), the same day: one standalone elaboration of the
+          new module HardyLadder/OneHalf.lean and one full build with the
+          eight new compared statements, both green on the first attempt,
+          one unsandboxed comparator run, two elaborated-type probes, and one
+          further full build after the docstring edits; about 35 minutes.
+          Then, after further docstring and text edits (statements
+          unchanged): one full build (every package module compiled from
+          source), two elaborated-type probes and one unsandboxed comparator
+          run. Statements 5-11 and 30, 2026-10-29: one standalone elaboration
+          each of the new module HardyLadder/Maximiser.lean and of the
+          extended HardyLadder/TotallyReal.lean, both green on the first
+          attempt; one full build with the thirty compared statements, green
+          on the first attempt; one unsandboxed comparator run and two
+          elaborated-type probes; then one full build after the docstring
+          edits (green), one unsandboxed comparator run and two
+          elaborated-type probes on the final sources; about one hour.
+        spend_usd: "subscription-based"
+        hardware: "local machine (macOS, Apple silicon)"
+      prompting_notes: >-
+        Targets and the compared set fixed by the author (the closed form for
+        every K, the K = 1 and K = 2 optima on q in (0, 1) with their
+        maximisers, the arithmetic of the K = 2 value; the totally-real
+        exclusion for the cubic field; then the
+        below-one-half theorem for every K and the end-to-end K = 1 and
+        K = 2 optima; then the maximiser for every K, Cereceda's eq. (20),
+        and the non-real conjugate of the K = 2 value; the statements
+        ordered every K first, then K = 1, K = 2 and the arithmetic of the
+        K = 2 value); the real-settings formulation with
+        angles chosen to match the ladder papers; proofs iterated against the
+        compiler module by module.
+    - method: "manual"
+      models: []
+      framework: "n/a"
+      tool_setup: >-
+        Author-directed target selection, statement design and acceptance;
+        the compared statements audited by the author against the library
+        modules and the computer-algebra derivations.
+      cost:
+        wall_time: "included in the sessions above"
+        spend_usd: "not tracked"
+        hardware: "local machine"
+      prompting_notes: "n/a"
+  spend_usd: "subscription-based"
+  notes: >-
+    Human-directed, machine-verified workflow: the author fixes targets and
+    reviews statements; AI assistance drafts and repairs proofs; the Lean
+    kernel is the acceptance criterion. Comparator checks that the theorems
+    proved in Solution.lean are exactly the statements in Challenge.lean,
+    using only the three standard axioms.
+
+fidelity:
+  divergences: >-
+    The ladder is stated for a real two-qubit state in Schmidt form and real
+    settings only: measurement directions are (cos a_k, sin a_k) and
+    (-sin a_k, cos a_k) in the Schmidt basis, with the angles as functions
+    a b : N -> R of which only indices 0..K are used, and the state is
+    c0|00> + c1|11> with c0, c1 > 0. The reduction of a general two-qubit
+    pure state with complex settings to this case (local unitaries absorbed
+    into the settings, and the cancellation of the measurement phases) is
+    not formalised here and is not part of this entry; Cereceda 2002 also
+    works with real settings. A numerical optimisation over complex states
+    and complex projective settings (200 random restarts for each of
+    K = 1, 2, 3; not shipped) found the same optima - numerical evidence,
+    not proof. Mixed states and general POVMs are not
+    addressed. The state, the measurements and the probabilities are not
+    Hilbert-space objects in the statements: the ladder constraints are
+    vanishing squared real amplitudes and the objective is the squared
+    amplitude P(A_K = 1, B_K = 1); the identification of these expressions
+    with quantum-mechanical probabilities is the informal reading, not part
+    of the statements. The state c0|00> + c1|11> differs from Cereceda's
+    alpha|++> - beta|--> by a local sign (b -> -b), which leaves the optima
+    unchanged; Cereceda's optimal alpha_k = beta_k becomes b_k = -a_k here,
+    the witness of statement 2 (tan b_k = -tan a_k for every k). Statements
+    1-2 take q = c1/c0 inside the formula rather than naming P_K* (the
+    q-form is half of Cereceda's eq. (33); his eq. (19) is the
+    (alpha, beta) form, the library's uncompared ladderValue'); at K = 0
+    both sides of statements 1-2 are 0, statement 3 at K = 0 reads
+    0 < 1/2, and statement 5 at K = 0 says that the zero function has
+    derivative 0; statements 6-9 and 11 assume K >= 1. Statements 6-8, 12,
+    14-15 and 20-23 concern P_K*(q) (and m_K) on q in (0, 1), i.e. states
+    with c1 < c0 (statement 5 holds for every q > 0; statements 13 and 19
+    are about phi and rho alone); the passage to every Schmidt
+    ratio uses the symmetry P_K*(1/q) = P_K*(q) (Cereceda 2002, below
+    Table 1; p. 4 of arXiv v4), which is proved in the library
+    (HardyLadder.ladderValue_inv, uncompared) and enters the proofs of the
+    compared statements 3, 9, 11, 16, 18, 24 and 26; with the attainment
+    statements 10, 17 and 25 these cover every Schmidt ratio (c1 < c0,
+    c1 = c0 or c1 > c0; product states, c0 = 0 or c1 = 0, are excluded by
+    the hypotheses c0, c1 > 0 as in statements 1-2). Attainment is stated
+    at one optimal state: for every K at the ratio r (statement 10), at
+    K = 1, 2 at one state (statements 17, 25); that the swapped state,
+    ratio r^{-1}, also attains the optimum follows from the symmetry and
+    is not a compared statement. Statements 9 and 11 are statement 1
+    composed with the library proofs of 7-8 and the symmetry, for every
+    K >= 1, with r a hypothesis (r in (0, 1), m_K(r) = 0) whose existence
+    and uniqueness is statement 6; statement 10 is statement 2 at the
+    state c0 = (1 + r^2)^{-1/2}, c1 = r c0, for every K and every r > 0,
+    and does not need m_K(r) = 0 (at the zero of m_K it attains the bound
+    of statement 9).
+    Statements 16-18 and 24-26 are statements 1-2 composed with the library
+    proofs of 12, 20 and 21, the symmetry (in 16, 18, 24 and 26), Hardy's quadratic
+    q^2 - phi^2 q + 1 (for 17-18) and rho^{-1} + rho^{-5} = 1 (for 25-26,
+    the uncompared library lemma HardyLadder.inv_add_inv_pow_five),
+    written out at K = 1 and K = 2 (the constraints as "for all k < 1" and
+    "for all k < 2", the objective at index 1 and 2); their text is
+    identical to the library theorems of HardyLadder/Optimum.lean that
+    prove them. The
+    statement "the supremum over all K, all Schmidt states and all real
+    settings is 1/2 and is not attained" is not a single Lean statement: it
+    is split into statement 3 (strict bound, every K) and statement 4
+    (for every eps > 0 there is K0 such that every K >= K0 admits a state
+    and settings above 1/2 - eps), and no sSup, limit or filter is written
+    in statements 3-4 (the one limit notion in the compared set is
+    HasDerivAt, in statement 5). In statement 4 the state is quantified
+    after K, so it may depend on eps and K; the proof uses one state for
+    each eps (its Schmidt ratio q = c1/c0 taken close to 1, so the state is
+    entangled but not maximally, as in Cereceda's quotation) and varies only
+    the angles with K. Nothing is claimed about the rate at which 1/2 is
+    approached. Statements 5 and 7-11 write P_K* out, and statements 5-9 and 11
+    Cereceda's m_K, for a
+    variable K : N, which enters the exponents as a natural number and the
+    coefficients 1 + 2K and 2K as a real number (the library states them
+    through ladderValue K q and cerecedaM K x, which unfold to the
+    written-out formulas). Statements 12, 14, 15 and 20-23 write P_1* and
+    P_2* out with the exponents 2, 3 and 4, 5, which are the instances
+    2K, 2K + 1 of the general formula at K = 1, 2 (the library states them
+    through the definition ladderValue K q, which unfolds to the
+    written-out formula). The plastic number enters
+    statements 20-30 as a real number rho with the hypothesis
+    rho ^ 3 = rho + 1; statement 19 proves that exactly one such real
+    number exists, so the hypothesis determines rho. Statement 29 carries
+    the hypothesis rho ^ 3 = rho + 1, which does not enter its conclusion:
+    the proof goes through the minimal polynomial of the value (statement
+    27), and the statement is kept in the form of statements 27-28; by
+    statement 19 the hypothesis is satisfiable, so the statement is not
+    vacuous. Statement 27 gives the minimal polynomial in Mathlib's monic
+    form over Q; its primitive integer form 25x^3 + 17x^2 + 2x - 1 is
+    statement 29 (over Q; the library proves the reversed polynomial
+    x^3 - 2x^2 - 17x - 25 irreducible over Z and over Q, uncompared). The
+    K = 2 value is the optimum over two-qubit Schmidt states and real
+    settings, and the bound 1/2 of statements 3-4 is likewise stated over
+    two-qubit Schmidt states and real settings; nothing is claimed about
+    higher dimensions (the dimension-independence at K = 1 is Rabelo, Zhi
+    and Scarani 2012, and the strict bound P_K < 1/2 in every dimension
+    follows from Cereceda 2016, eq. (9), with Wehner 2006; neither is
+    formalised). The derivative appears in statement 5 only, as Mathlib's
+    HasDerivAt at each q > 0; Cereceda's characterisation of the maximisers
+    is formalised on (0, 1) for every K >= 1 as statements 6-8 (the zero r
+    of m_K in (0, 1) exists, is unique, and is the unique maximiser), with
+    no second-derivative or critical-point classification stated (the
+    proof uses the sign of m_K on either side of r); the root r2 = 1/r1 > 1
+    enters only through the symmetry, in statement 11. Cereceda's footnote
+    census of the other roots of m_K (-1 with multiplicity 3, 4K - 2
+    non-real roots) and his remark that r1 -> 1 as K -> infinity are not
+    formalised (the census was checked by computer algebra for K <= 40). At K = 1, 2 the
+    maximisers are also characterised algebraically (statements 14, 21,
+    22) and by uniqueness (statements 15, 23); the word "stationarity
+    cofactor" for q^3 - q^2 + 2q - 1 refers to its being the factor of
+    m_2 carrying the zero in (0, 1) (library lemma cerecedaM_two; the
+    factorisation is not a compared statement). Statement 30 renders "the
+    K = 2 value is not totally real" as: the minimal polynomial of the
+    value over Q has a root z in C with z.im /= 0, a non-real conjugate;
+    Mathlib's minpoly is 0 for a non-algebraic element, for which the
+    conclusion would hold trivially; the value is algebraic of degree 3 and
+    statement 27 identifies the polynomial as the monic cubic, so z is a
+    conjugate of the value (a root of 25x^3 + 17x^2 + 2x - 1), and the two
+    statements together say that the value is not totally real.
+    Mathlib's NumberField.IsTotallyReal is not used in it, and the reading
+    of the complex roots of the minimal polynomial as the conjugates is
+    the standard meaning of the word, not a compared theorem. That
+    Q((8 rho^2 + rho - 11)/25) = Q(rho), which follows from statement 28
+    (v lies in Q(rho), and both have degree 3), is not formalised. The
+    library keeps, uncompared, the field form: every totally real subfield
+    of a number field of degree 3 containing a root of x^3 - x - 1 is Q
+    (HardyLadder.totallyReal_subfield_eq_bot,
+    HardyLadder.mem_bot_of_isTotallyReal_adjoin).
+
+review:
+  status: "self-assessed"
+  reviewers:
+    - "Stephanie Alexander"
+  notes: >-
+    Self-assessed; not peer-reviewed. Before submission the author had the
+    entry read in AI-assisted in-house reviews: presentation, provenance
+    and literature account; fidelity of the Lean statements, with a
+    rebuild, an axiom audit and an elaborated-type comparison of Challenge
+    and Solution; and prior art in the literature and the formal
+    libraries. The most recent review, on 2026-10-29, covered all thirty
+    statements. The findings of the most recent review were applied as
+    text and metadata edits; no compared statement changed in response to
+    it. Every
+    compared statement is kernel-checked, axiom-audited and accepted by
+    lake comparator (BUILD.txt). Every DOI was checked against Crossref,
+    and quotations against the primary texts named in each source entry.
+
+alignment:
+  namespace: "HardyLadder.Entry"
+  statements:
+    - source: "Cereceda 2002, eq. (19), equivalently half of eq. (33) in x = alpha/beta (attributed there to Hardy 1997 and Boschi et al. 1997; optimality over the settings at fixed state: Cereceda 2002, eq. (18)): the K-step two-qubit ladder probability optimised over the free setting at fixed Schmidt ratio; formalised as an upper bound for a real Schmidt state and real settings (no prior formal statement found, prover sweep dated 2026-10-28)"
+      lean: "HardyLadder.Entry.ladder_prob_le"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        For c0, c1 > 0 with c0^2 + c1^2 = 1 and angles satisfying the K-step
+        ladder constraints, (c0 cos a_K cos b_K + c1 sin a_K sin b_K)^2 <=
+        q^2 (1 - q^{2K})^2 / ((1 + q^2)(1 + q^{2K+1})^2) with q = c1/c0.
+        Proof: each constraint makes a unit vector parallel to a rotated
+        image of the previous one, so A_K and B_K are parallel to N^K A_0 and
+        N^K J M A_0 (N = diag(c1, c0), J M = [[0, -c1], [c0, 0]]), in an
+        order depending on the parity of K; the squared amplitude is then a
+        ratio whose denominator exceeds the AM-GM value by
+        c0^{2K} c1^{2K} (c0 x^2 - c1 y^2)^2 >= 0 for A_0 = (x, y).
+    - source: "Cereceda 2002, eq. (19) and the equal-settings optimum, eq. (18) (the attainment of the closed form); Hardy 1997; Boschi et al. 1997"
+      lean: "HardyLadder.Entry.ladder_prob_attained"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        For every K and every normalised c0, c1 > 0 there are angles
+        satisfying the constraints with equality: tan a_0 = q^{-1/2},
+        tan b_0 = -q^{-1/2}, tan a_{k+1} = tan b_k / q, tan b_{k+1} = tan a_k / q,
+        realised with Real.arctan. (Cereceda's alpha_k = beta_k is for the
+        state alpha|++> - beta|-->; for c0|00> + c1|11> this is b_k = -a_k,
+        the witness used here.)
+    - source: "The two-qubit, real-settings, Schmidt-form case of a known stronger bound: Cereceda 2016, eqs. (8)-(9), with Wehner 2006, give P_K <= (1/4)[2(K+1) cos(pi/(2K+2)) - 2K], which is below 1/2, for any state and any +-1 observables (Cereceda's setting is two qubits; neither step uses the dimension); for two qubits and equal settings, Hardy 1997 and Boschi, Branca, De Martini and Hardy 1997: the maximum of the K-step ladder probability is below one half, \"(50 - delta)%\", realised for K -> infinity and a state that is not quite maximally entangled (as quoted by Cereceda 2002 after eq. (19); the bodies of Hardy 1997 and Boschi et al. 1997 were not opened); unequal real settings via Cereceda 2002, eq. (18); no-signalling boxes reach exactly 1/2 (Cereceda 2015); attributed, not new (no prior formal statement found, prover sweep dated 2026-10-28)"
+      lean: "HardyLadder.Entry.ladder_prob_lt_half"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        Under exactly the hypotheses of statement 1 (c0, c1 > 0,
+        c0^2 + c1^2 = 1, angles satisfying the K-step ladder constraints),
+        (c0 cos a_K cos b_K + c1 sin a_K sin b_K)^2 < 1/2, for every K.
+        Proof: the probability is at most P_K*(q), q = c1/c0 (statement 1);
+        for q in (0, 1), 2 q^2 (1 - q^{2K})^2 <= 2 q^2 < 1 + q^2
+        <= (1 + q^2)(1 + q^{2K+1})^2, since 0 < q^{2K} <= 1; for q > 1 the
+        symmetry P_K*(1/q) = P_K*(q) reduces to q < 1; and P_K*(1) = 0.
+        (The all-dimension bound that follows from Cereceda 2016 goes through the
+        chained-CHSH Tsirelson bound; that route is not used here.)
+    - source: "Hardy 1997 and Boschi et al. 1997, the approach to one half for large K (as quoted by Cereceda 2002 after eq. (19); cf. his introduction: the percentage \"grows from 9 % when only two observables are considered to almost 50%\"); the limit 1/2 as K -> infinity, x -> 1 also in Cereceda 2002, p. 6, Cabello 1998, Sec. 2, and Cereceda 2016, p. 4; attributed to them, not new (no prior formal statement found, prover sweep dated 2026-10-28)"
+      lean: "HardyLadder.Entry.ladder_prob_approaches_half"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        For every eps > 0 there is K0 : N such that for every K >= K0 there
+        are c0, c1 > 0 with c0^2 + c1^2 = 1 and angles satisfying the K-step
+        constraints with 1/2 - eps < P(A_K = 1, B_K = 1). With statement 3:
+        over all K, Schmidt states and real settings the supremum is 1/2 and
+        is not attained. Proof: choose q in (max(0, 1 - eps), 1), so that
+        q^2/(1 + q^2) > 1/2 - eps; for fixed q, P_K*(q) -> q^2/(1 + q^2) as
+        K -> infinity because (q^2)^K -> 0
+        (tendsto_pow_atTop_nhds_zero_of_lt_one); take the state with
+        c1/c0 = q and the attaining angles of statement 2. The limit is used
+        only in the proof; the statement is written with exists and forall.
+    - source: "The derivative of the K-step closed form, whose numerator carries Cereceda 2002's eq. (20) polynomial m_K(x) = x^{4K+3} - (1+2K) x^{2K+3} - 2K x^{2K+2} - 2K x^{2K+1} - (1+2K) x^{2K} + 1 (eq. (20) is introduced with \"It can be shown\", p. 4; the derivative is not printed there); no prior formal statement found (prover sweeps dated 2026-10-28 and 2026-10-29)"
+      lean: "HardyLadder.Entry.hasDerivAt_ladder_value"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        For every K and q > 0, HasDerivAt of
+        x |-> x^2 (1 - x^{2K})^2 / ((1 + x^2)(1 + x^{2K+1})^2) at q with
+        derivative 2q (1 - q^{2K}) m_K(q) / ((1 + q^2)^2 (1 + q^{2K+1})^3),
+        m_K written out. Proof: hasDerivAt_pow with the product, sum,
+        difference, power and quotient rules; q^{2K-1} = q^{2K}/q (K >= 1;
+        at K = 0 both sides vanish); the powers q^{2K+1}, q^{2K+2},
+        q^{2K+3}, q^{4K+3} rewritten through u = q^{2K}, then field_simp and
+        ring. The identity was checked in computer algebra for K = 1, ..., 8
+        before formalisation.
+    - source: "Cereceda 2002, p. 4 and footnote to eq. (20): the maximisers are the two non-trivial real roots r1 < 1 < r2 = 1/r1 of m_K (\"It can be shown\"), the other roots being -1 (triple) and complex; here: m_K has exactly one zero in (0, 1), for every K >= 1; no prior formal statement found (prover sweeps dated 2026-10-28 and 2026-10-29)"
+      lean: "HardyLadder.Entry.existsUnique_mK_root"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        For K >= 1 there is exactly one r in (0, 1) with m_K(r) = 0. Proof:
+        m_K(x) = 1 - x^{2K} g_K(x) with
+        g_K(x) = (1 + 2K) + 2K x + 2K x^2 + (1 + 2K) x^3 - x^{2K+3}; on [0, 1],
+        g_K > 0 and g_K' = 2K + 4K x + 3(1 + 2K) x^2 - (2K + 3) x^{2K+2} > 0
+        (since x^{2K+2} <= x^2), so x^{2K} g_K(x) is strictly increasing and
+        m_K strictly decreasing there (strictMonoOn_of_deriv_pos), from
+        m_K(0) = 1 to m_K(1) = -8K; existence by intermediate_value_Ioo'.
+    - source: "Cereceda 2002, eq. (20) and p. 4: the maximiser of the closed form (19) on (0, 1) is the non-trivial real root r1 < 1 of m_K (\"It can be shown\"; Table 1 lists r1 and the maxima for K = 1, ..., 10 numerically); here for every K >= 1; no prior formal statement found (prover sweeps dated 2026-10-28 and 2026-10-29)"
+      lean: "HardyLadder.Entry.ladder_value_isGreatest_of_mK_root"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        For K >= 1, r in (0, 1) and m_K(r) = 0, IsGreatest of the image of
+        (0, 1) under P_K* at P_K*(r). Proof: by statement 5 the sign of the
+        derivative on (0, 1) is the sign of m_K, positive on (0, r) and
+        negative on (r, 1) (m_K strictly decreasing, statement 6's proof), so
+        P_K* is strictly increasing on (0, r] and strictly decreasing on
+        [r, 1) (strictMonoOn_of_deriv_pos, strictAntiOn_of_deriv_neg).
+    - source: "Cereceda 2002, p. 4 (uniqueness of the maximiser below 1, r1 < 1 < r2 = 1/r1, \"It can be shown\"); here for every K >= 1; no prior formal statement found (prover sweeps dated 2026-10-28 and 2026-10-29)"
+      lean: "HardyLadder.Entry.eq_of_ladder_value_eq_of_mK_root"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        For K >= 1, r in (0, 1) with m_K(r) = 0 and q in (0, 1) with
+        P_K*(q) = P_K*(r), q = r: by the strict monotonicity on (0, r] and
+        [r, 1), q < r or q > r would give P_K*(q) < P_K*(r).
+    - source: "Cereceda 2002, eqs. (18)-(20) and p. 4: the optimum of the K-step two-qubit ladder over states (with equal settings optimal) is P_K at the root r1 of m_K; here over every real Schmidt state and real settings, end to end, for every K >= 1; no prior formal statement found (prover sweeps dated 2026-10-28 and 2026-10-29)"
+      lean: "HardyLadder.Entry.ladder_prob_le_of_mK_root"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        For K >= 1, r in (0, 1) with m_K(r) = 0, every c0, c1 > 0 with
+        c0^2 + c1^2 = 1 (either order) and angles satisfying the K-step
+        constraints, (c0 cos a_K cos b_K + c1 sin a_K sin b_K)^2 <= P_K*(r).
+        Proof: statement 1, then P_K*(q) <= P_K*(r) for every q > 0
+        (statement 7 on (0, 1), the symmetry for q > 1, P_K*(1) = 0).
+    - source: "Cereceda 2002, eq. (19) and its attainment with equal settings (eq. (18)); Hardy 1997; Boschi et al. 1997: the closed form is attained at every Schmidt ratio"
+      lean: "HardyLadder.Entry.ladder_prob_attained_of_ratio"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        For every K and r > 0 there are c0, c1 > 0 with c0^2 + c1^2 = 1 and
+        c1/c0 = r, and angles satisfying the K-step constraints, with
+        P(A_K = 1, B_K = 1) = P_K*(r): the state c0 = (1 + r^2)^{-1/2},
+        c1 = r c0 and the arctan chain of statement 2. At the zero r of m_K
+        in (0, 1) this attains the bound of statement 9; the statement does
+        not need m_K(r) = 0.
+    - source: "Cereceda 2002, p. 4: the maximising ratios are r1 and r2 = 1/r1 (by the symmetry P_K(alpha, beta) = P_K(beta, alpha)); here every optimal configuration over real Schmidt states and real settings has c1/c0 in {r, 1/r}, for every K >= 1; no prior formal statement found (prover sweeps dated 2026-10-28 and 2026-10-29)"
+      lean: "HardyLadder.Entry.ratio_of_ladder_prob_eq_of_mK_root"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        If angles satisfying the K-step constraints give
+        P(A_K = 1, B_K = 1) = P_K*(r), r the zero of m_K in (0, 1), then
+        c1/c0 = r or c1/c0 = r^{-1}. Proof: equality forces
+        P_K*(c1/c0) = P_K*(r) (statements 1 and 9); c1/c0 = 1 is excluded
+        since P_K*(1) = 0 < P_K*(r); for c1/c0 < 1 statement 8 gives r, and
+        for c1/c0 > 1 the symmetry and statement 8 give c0/c1 = r.
+    - source: "Hardy 1993, p. 1667: the maximum (1/2)(5 sqrt 5 - 11) of the two-qubit Hardy probability over states, at 2|alpha beta| = 3 - sqrt 5 (K = 1 of the ladder); stated as phi^{-5}, the greatest value on q in (0, 1) (attainment of the value formalised earlier in zblore/csd-lean4, hardyMax_probability_eq; the upper bound is not)"
+      lean: "HardyLadder.Entry.hardy_K1_isGreatest"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        IsGreatest of the image of (0, 1) under
+        q^2 (1 - q^2)^2 / ((1 + q^2)(1 + q^3)^2) at phi^{-1} ^ 5. Proof: in
+        s = q + 1/q > 2 the function is (s - 2)/(s (s - 1)^2) and
+        s (s - 1)^2 - phi^5 (s - 2) = (s - phi^2)^2 (s + 2 phi); attained at
+        q* = (phi^2 - sqrt(3 phi - 2))/2, the root of q^2 - phi^2 q + 1 in (0, 1).
+        Over every real Schmidt state (q >= 1 included) and real settings:
+        statements 16-18.
+    - source: "Hardy 1993 (the value (5 sqrt 5 - 11)/2); the phi^{-5} form is in Mermin 1994 (1/tau^5 = 0.09017, tau the golden mean) and Cereceda 2001 (tau^{-5}); cf. zblore/csd-lean4, hardyMax_value (1/(5 phi + 3) = (5 sqrt 5 - 11)/2)"
+      lean: "HardyLadder.Entry.hardy_value_eq"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        phi^{-1} ^ 5 = (5 sqrt 5 - 11)/2, from phi^5 = (11 + 5 sqrt 5)/2 and
+        (11 + 5 sqrt 5)(5 sqrt 5 - 11) = 4.
+    - source: "The maximiser of the K = 1 closed form: Hardy 1993 gives it as 2|alpha beta| = 3 - sqrt 5, i.e. q^2 - phi^2 q + 1 = 0; the quartic q^4 - 3q^3 + 3q^2 - 3q + 1 is the K = 1 factor of Cereceda 2002's eq. (20) polynomial m_1(x) = (x + 1)^3 (x^4 - 3x^3 + 3x^2 - 3x + 1) and the factor of the numerator of dP_1*/dq carrying the maximiser"
+      lean: "HardyLadder.Entry.hardy_K1_eq_iff_quartic"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        For q in (0, 1), P_1*(q) = phi^{-5} iff q^4 - 3q^3 + 3q^2 - 3q + 1 = 0.
+        The quartic factors over Q(phi) as
+        (q^2 - phi^2 q + 1)(q^2 - (2 - phi) q + 1), Hardy's condition times its
+        conjugate, the second factor having no real root; equality in the
+        s-bound forces s = phi^2. With statement 12 it also follows from the K = 1 case of statements 6-8,
+        through m_1(x) = (x + 1)^3 (x^4 - 3x^3 + 3x^2 - 3x + 1) (library lemma
+        HardyLadder.cerecedaM_one), proved separately.
+    - source: "Uniqueness of the K = 1 maximiser on (0, 1): Mermin 1994, p. 11 (\"Maximizing (6) gives uniquely p_l = p_r = (sqrt 5 - 1)/2 = 1/tau\", in his parametrisation); for every K, Cereceda 2002, eq. (20) and p. 4 (r1 < 1 < r2 = 1/r1, the two non-trivial real roots of m_K, stated without proof); in every dimension, uniqueness of the optimal state up to local isometries, Rabelo, Zhi and Scarani 2012 (self-testing); no prior formal statement found (prover sweep dated 2026-10-28)"
+      lean: "HardyLadder.Entry.hardy_K1_existsUnique"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        Exactly one q in (0, 1) attains phi^{-5}: the roots of q^2 - phi^2 q + 1
+        are q* and 1/q*, and q* < 1 < 1/q*.
+    - source: "Hardy 1993, p. 1667 (the maximum (1/2)(5 sqrt 5 - 11) over states); optimality over all real settings at fixed state: Cereceda 2002, eq. (18) (Cereceda 2002 credits the K = 1 case of its eq. (16), the probability as a function of the free setting, to Cereceda 1998); a special case of Rabelo, Zhi and Scarani 2012 (every dimension); the bound over every Schmidt state, end to end (no prior formal statement found, prover sweep dated 2026-10-28)"
+      lean: "HardyLadder.Entry.ladder_K1_le"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        For every c0, c1 > 0 with c0^2 + c1^2 = 1 (either order) and angles
+        satisfying the one-step ladder constraints,
+        (c0 cos a_1 cos b_1 + c1 sin a_1 sin b_1)^2 <= phi^{-1} ^ 5. Proof:
+        statement 1 at K = 1, then P_1*(q) <= phi^{-5} for every q > 0
+        (statement 12 on (0, 1), the symmetry for q > 1, P_1*(1) = 0).
+    - source: "Hardy 1993, p. 1667: the maximum is attained at 2|alpha beta| = 3 - sqrt 5 (attainment of the value formalised earlier in zblore/csd-lean4, hardyMax_probability_eq)"
+      lean: "HardyLadder.Entry.ladder_K1_attained"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        There are c0, c1 > 0 with c0^2 + c1^2 = 1 and 2 c0 c1 = 3 - sqrt 5,
+        and angles satisfying the one-step constraints, with
+        P(A_1 = 1, B_1 = 1) = phi^{-1} ^ 5: the state with
+        c1/c0 = q* = (phi^2 - sqrt(3 phi - 2))/2 and the arctan chain of
+        statement 2.
+    - source: "Hardy 1993, p. 1667 (the condition 2|alpha beta| = 3 - sqrt 5 at the maximum); uniqueness of the optimal state in every dimension: Rabelo, Zhi and Scarani 2012; that every optimal configuration satisfies it (no prior formal statement found, prover sweep dated 2026-10-28)"
+      lean: "HardyLadder.Entry.ladder_K1_hardy_condition_of_eq"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        If angles satisfying the one-step constraints give
+        P(A_1 = 1, B_1 = 1) = phi^{-1} ^ 5, then 2 c0 c1 = 3 - sqrt 5. Proof:
+        equality forces P_1*(q) = phi^{-5}, so q or 1/q is the root of
+        Hardy's quadratic q^2 - phi^2 q + 1 in (0, 1) (q = 1 is excluded
+        since P_1*(1) = 0), and with c0^2 + c1^2 = 1 this gives
+        2 c0 c1 = 3 - sqrt 5.
+    - source: "Elementary: the cubic x^3 - x - 1 has exactly one real root (its discriminant is -23); the plastic number"
+      lean: "HardyLadder.Entry.existsUnique_cubic"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        Existence by the intermediate value theorem on [1, 2]; uniqueness
+        because x^3 - y^3 = x - y forces (x - y)(x^2 + xy + y^2 - 1) = 0 with
+        x, y > 1.
+    - source: "Boschi et al. 1997 (17.5 %, as quoted by Cabello 1998), Cereceda 2002, Table 1 (0.174) and Meng et al. 2018, Table I (0.17455): the optimum of the two-step ladder over two-qubit states and real settings; stated here as the greatest value of P_2* on (0, 1), in closed form (8 rho^2 + rho - 11)/25 with rho the plastic number, which was not found in the literature searched (2026-10-28)"
+      lean: "HardyLadder.Entry.hardy_K2_isGreatest"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        For rho with rho^3 = rho + 1, IsGreatest of the image of (0, 1) under
+        q^2 (1 - q^4)^2 / ((1 + q^2)(1 + q^5)^2) at (8 rho^2 + rho - 11)/25.
+        Proof: in s = q + 1/q > 2 the function is s (s - 2)/(s^2 - s - 1)^2 and
+        v (s^2 - s - 1)^2 - s (s - 2) = (s - rho - 1)^2 (v s^2 + B s + C) with
+        v = (8 rho^2 + rho - 11)/25, B = (2 rho^2 - 6 rho + 16)/25,
+        C = (-23 rho^2 + 19 rho + 16)/25, all positive because 5/4 < rho < 4/3;
+        attained at q = rho^{-2}, where s = rho^{-2} + rho^2 = rho + 1. Over
+        every real Schmidt state (q >= 1 included) and real settings:
+        statements 24-26.
+    - source: "The maximiser of the two-step ladder at q = rho^{-2} (Cereceda 2002, Table 1: r1 = 0.569 numerically, a root of the unstated factor q^3 - q^2 + 2q - 1 of its m_2(x), eq. (20); rho^{-2} not found in the literature searched, 2026-10-28)"
+      lean: "HardyLadder.Entry.hardy_K2_eq_iff_inv_sq"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        For q in (0, 1), P_2*(q) = (8 rho^2 + rho - 11)/25 iff q = rho^{-1} ^ 2.
+        Equality forces s = rho + 1, i.e. q^2 - (rho + 1) q + 1 = 0, whose
+        roots are rho^{-2} and rho^2 > 1.
+    - source: "The stationarity cofactor q^3 - q^2 + 2q - 1 of the K = 2 closed form: an irreducible factor of Cereceda 2002's eq. (20) polynomial m_2(x) = (x + 1)^3 (x^2 + 1)(x^3 - 2x^2 + x - 1)(x^3 - x^2 + 2x - 1), which the paper does not factor beyond noting the triple root -1 and that the other 4K - 2 roots are complex (footnote, p. 4), and the factor of the numerator of dP_2*/dq carrying the maximiser; its root in (0, 1) is Cereceda's numerical r1 = 0.569"
+      lean: "HardyLadder.Entry.hardy_K2_eq_iff_cubic"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        For q in (0, 1), P_2*(q) = (8 rho^2 + rho - 11)/25 iff
+        q^3 - q^2 + 2q - 1 = 0, because
+        q^3 - q^2 + 2q - 1 = (q - rho^{-2})(q^2 + (rho^{-2} - 1) q + rho^2) and
+        the quadratic factor has no real root. The other cubic factor of m_2,
+        x^3 - 2x^2 + x - 1, is the minimal polynomial of rho^2 (Cereceda's
+        r2 = 1.754). With statement 20 it also follows from the K = 2 case of statements 6-8, through the
+        factorisation of m_2 (library lemma HardyLadder.cerecedaM_two), proved
+        separately.
+    - source: "Uniqueness of the K = 2 maximiser on (0, 1): Cereceda 2002, eq. (20) and p. 4 (r1 < 1 < r2 = 1/r1, the two non-trivial real roots of m_K, stated without proof); no prior formal statement found (prover sweep dated 2026-10-28)"
+      lean: "HardyLadder.Entry.hardy_K2_existsUnique"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        Exactly one q in (0, 1) attains the K = 2 optimum, namely rho^{-2}.
+    - source: "Hardy 1997 and Boschi et al. 1997 (17.5 %, as quoted by Cabello 1998), Cereceda 2002, Table 1 (0.174) and Meng et al. 2018, Table I (0.17455): the optimum of the two-step ladder over two-qubit states; here over every real Schmidt state and real settings, end to end, in closed form (8 rho^2 + rho - 11)/25 (closed form not found in the literature searched, 2026-10-28)"
+      lean: "HardyLadder.Entry.ladder_K2_le"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        For rho with rho^3 = rho + 1 and every c0, c1 > 0 with
+        c0^2 + c1^2 = 1 (either order) and angles satisfying the two-step
+        ladder constraints,
+        (c0 cos a_2 cos b_2 + c1 sin a_2 sin b_2)^2 <= (8 rho^2 + rho - 11)/25.
+        Proof: statement 1 at K = 2, then P_2*(q) <= (8 rho^2 + rho - 11)/25
+        for every q > 0 (statement 20 on (0, 1), the symmetry for q > 1,
+        P_2*(1) = 0).
+    - source: "The optimal K = 2 state, with Schmidt weights rho^{-1}, rho^{-5} (not stated in the literature searched, 2026-10-28; numerically implicit in Cereceda 2002, Table 1, r1 = 0.569)"
+      lean: "HardyLadder.Entry.ladder_K2_attained"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        There are c0, c1 > 0 with c0^2 + c1^2 = 1, c0^2 = rho^{-1} and
+        c1^2 = rho^{-1} ^ 5, and angles satisfying the two-step constraints,
+        with P(A_2 = 1, B_2 = 1) = (8 rho^2 + rho - 11)/25: the state
+        c0 = sqrt(rho^{-1}), c1 = sqrt(rho^{-5}), whose ratio is rho^{-2}
+        (statement 21), and the arctan chain of statement 2.
+    - source: "Every optimal K = 2 configuration has Schmidt weights {rho^{-1}, rho^{-5}} (not stated in the literature searched, 2026-10-28; no prior formal statement found, prover sweep dated 2026-10-28)"
+      lean: "HardyLadder.Entry.ladder_K2_weights_of_eq"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        If angles satisfying the two-step constraints give
+        P(A_2 = 1, B_2 = 1) = (8 rho^2 + rho - 11)/25, then
+        (c0^2 = rho^{-1} and c1^2 = rho^{-1} ^ 5) or
+        (c0^2 = rho^{-1} ^ 5 and c1^2 = rho^{-1}). Proof: equality forces
+        P_2*(q) = (8 rho^2 + rho - 11)/25, so q or 1/q is rho^{-2}
+        (statement 21; q = 1 is excluded since P_2*(1) = 0), and
+        rho^{-1} + rho^{-5} = 1 (the library lemma
+        HardyLadder.inv_add_inv_pow_five) gives the weights.
+    - source: "The minimal polynomial of the K = 2 optimum (no prior formal statement found, prover sweep dated 2026-10-28; computed with PARI/sympy in the author's derivations, polynomial discriminant -23^3 = -12167, field discriminant -23)"
+      lean: "HardyLadder.Entry.minpoly_value"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        minpoly Q ((8 rho^2 + rho - 11)/25) = X^3 + C (17/25) X^2 + C (2/25) X - C (1/25).
+        Proof: 25v^3 + 17v^2 + 2v - 1 = 0 modulo rho^3 = rho + 1; the
+        reciprocal w = 1/v is a root of x^3 - 2x^2 - 17x - 25, which is monic,
+        reduces to x^3 + x + 1 over F_2 (no root, hence irreducible), so is
+        irreducible over Z and over Q; hence [Q(w) : Q] = 3 = [Q(v) : Q] and
+        the monic cubic vanishing at v is its minimal polynomial.
+    - source: "The K = 2 optimum generates a cubic field (no prior formal statement found, prover sweep dated 2026-10-28; the field is Q(rho) itself, since v lies in Q(rho) and both have degree 3 (discriminant -23 by PARI); the equality is not formalised)"
+      lean: "HardyLadder.Entry.finrank_adjoin_value"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        Module.finrank Q (IntermediateField.adjoin Q {(8 rho^2 + rho - 11)/25}) = 3,
+        from adjoin.finrank and statement 27 (via Q(v) = Q(1/v)).
+    - source: "Irreducibility of 25x^3 + 17x^2 + 2x - 1 over Q (the primitive integer form of the minimal polynomial of statement 27)"
+      lean: "HardyLadder.Entry.irreducible_25"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        25 X^3 + 17 X^2 + 2 X - 1 = C 25 * minpoly Q v is a unit multiple of an
+        irreducible polynomial. The hypothesis rho ^ 3 = rho + 1 does not enter
+        the conclusion; it supplies the value v whose minimal polynomial is
+        used, and it is satisfiable by statement 19.
+    - source: "Elementary: the K = 2 value is not totally real (it lies in Q(rho), LMFDB 3.1.23.1: x^3 - x^2 + 1, signature (1, 1), discriminant -23, no intermediate fields; the discriminant of 25x^3 + 17x^2 + 2x - 1 is -23^3, computer algebra); by contrast the K = 1 value lies in the totally real field Q(sqrt 5) (not formalised); no prior formal statement found (prover sweeps dated 2026-10-28 and 2026-10-29)"
+      lean: "HardyLadder.Entry.exists_nonreal_root_minpoly_value"
+      module: "Solution"
+      status: "proved"
+      note: >-
+        For rho with rho^3 = rho + 1 there is z : C with z.im /= 0 and
+        aeval z (minpoly Q ((8 rho^2 + rho - 11)/25)) = 0. Proof: the
+        minimal polynomial is x^3 + (17/25) x^2 + (2/25) x - 1/25
+        (statement 27), irreducible and hence separable, so it has three
+        distinct roots in C (card_rootSet_eq_natDegree); a real root of
+        25x^3 + 17x^2 + 2x - 1 is positive (for x <= 0 the polynomial equals
+        25x (x + 2/5)^2 - 3(x + 1/3)^2 - 2/3 < 0), and two positive roots
+        x /= y would make 25(x^2 + xy + y^2) + 17(x + y) + 2 vanish; so at
+        most one root is real.
+
+acknowledgements: >-
+  Built on Mathlib and the Lean 4 toolchain - in particular Real.goldenRatio
+  and Real.goldenRatio_sq (NumberTheory/Real/GoldenRatio.lean), the arctan
+  API (Real.cos_arctan, Real.sin_arctan, Real.cos_sq_arctan), the minimal
+  polynomial and intermediate-field API (minpoly.eq_of_irreducible_of_monic,
+  IntermediateField.adjoin.finrank), Gauss's lemma
+  (Polynomial.Monic.irreducible_iff_irreducible_map_fraction_map), the
+  reduction criterion Polynomial.Monic.irreducible_of_irreducible_map, and
+  the number-field API (NumberField.IsTotallyReal, NumberField.InfinitePlace,
+  NumberField.Embeddings.range_eval_eq_rootSet_minpoly,
+  IntermediateField.isSimpleOrder_of_finrank_prime,
+  Polynomial.card_rootSet_eq_natDegree), the limit API
+  (tendsto_pow_atTop_nhds_zero_of_lt_one, Filter.Tendsto.div, lt_mem_nhds),
+  and the calculus API (HasDerivAt and its algebra,
+  strictMonoOn_of_deriv_pos, strictAntiOn_of_deriv_neg,
+  intermediate_value_Ioo');
+  thanks to the leanprover community. The closed form is Hardy's (1997) and
+  Boschi, Branca, De Martini and Hardy's (1997), restated as eq. (19) and
+  shown optimal over unequal settings by Cereceda (2002), who also
+  characterised its maximisers as the non-trivial real roots of m_K
+  (eq. (20)); the ladder, and
+  its approach to one half for large K (the "(50 - delta)%"), are Hardy's
+  (1997) and Boschi et al.'s (1997); the bound below one half in every
+  dimension follows from Cereceda's eq. (9) (2016) with Wehner's
+  chained-CHSH bound (2006);
+  and the K = 1 value is Hardy's (1993).
+  Developed with AI assistance (Anthropic Claude, in Claude Code) under the
+  author's direction.

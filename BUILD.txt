@@ -1,0 +1,75 @@
+hardy-ladder -- kernel build record, 2026-10-29
+Toolchain: leanprover/lean4:v4.35.0-rc2; Mathlib rev 065356127b1dc0016f66b7283ce0ce2c4055aa55 (git form
+  in lakefile.toml; lake-manifest.json pinned to the same revision; no `lake update`). Root package
+  name: hardy_ladder.
+Contents of the build (statements 1-30):
+  * Challenge.lean: thirty compared statements in namespace HardyLadder.Entry, each with a
+    `sorry` placeholder; imports Mathlib only; no definition of its own.
+  * Solution.lean: the thirty statements, each proved by a theorem of the library
+    HardyLadder, and one `#print axioms` line per compared theorem.
+  * Library HardyLadder (ten modules: Plastic, Golden, Ladder, HardyK1, HardyK2, Minpoly,
+    TotallyReal, Optimum, OneHalf, Maximiser), 160 theorems.
+  * AxiomAudit.lean: `#print axioms` for the 160 library theorems and the 30 compared theorems.
+  * DefinitionAudit.lean: 19 kernel-checked facts about the Mathlib definitions the statements use
+    (not compared).
+  * comparator.json: the 30 compared names; permitted axioms propext, Quot.sound,
+    Classical.choice.
+  SHA-256 (first 8 hex digits): Challenge.lean 3997028b, Solution.lean 4116519b, comparator.json
+  a3f4962c, HardyLadder/Maximiser.lean 98127c70, HardyLadder/TotallyReal.lean e4e35699,
+  lakefile.toml d59e909f, lake-manifest.json f9140465; the full list is SHA256SUMS.txt.
+Build: lake build (defaultTargets ["HardyLadder", "Challenge", "Solution", "AxiomAudit",
+  "DefinitionAudit"]) -> exit 0, Build completed successfully (8950 jobs)
+  build log tail of the last invocation (continuation lines omitted):
+    ℹ [8940/8950] Replayed DefinitionAudit
+    ✔ [8942/8950] Built HardyLadder.Maximiser (14s)
+    ℹ [8945/8950] Replayed Solution
+    ℹ [8947/8950] Replayed AxiomAudit
+    ⚠ [8949/8950] Built Challenge (15s)
+    Build completed successfully (8950 jobs).
+  Earlier full builds of the same day compiled the other changed modules from their current
+  sources (HardyLadder.TotallyReal, HardyLadder.Optimum, HardyLadder, Solution, AxiomAudit,
+  DefinitionAudit; exit 0, 8950 jobs); the modules Plastic, Golden, Ladder, HardyK1, HardyK2,
+  Minpoly and OneHalf, whose sources did not change, were replayed (every package module was
+  compiled from source in an earlier full build of the same sources).
+  warnings in the build log: 30, all `declaration uses sorry`, at Challenge.lean lines 237, 252,
+    271, 285, 300, 312, 321, 332, 345, 362, 377, 394, 400, 406, 412, 420, 432, 445, 458, 463,
+    469, 476, 482, 490, 503, 518, 532, 538, 544, 551 -- the thirty deliberate placeholders, one
+    per compared theorem; no other warning; errors: 0
+  axiom audit: 239 `#print axioms` lines in the build log (30 in Solution.lean, 190 in
+    AxiomAudit.lean = 160 library theorems + the 30 compared theorems, 19 in
+    DefinitionAudit.lean); every one reads exactly
+    `depends on axioms: [propext, Classical.choice, Quot.sound]`; no `sorryAx`, no other axiom
+  AxiomAudit coverage: the 160 library `#print axioms` names equal the set of every `theorem` in
+    HardyLadder/*.lean (none missing, none extra); the 30 compared names are printed in
+    comparator.json's order in both Solution.lean and AxiomAudit.lean
+  sources: no `sorry`, `admit`, `native_decide`, `axiom`, `implemented_by`, `extern`, `unsafe`,
+    `opaque`, `set_option`, `#eval` or `run_cmd` outside Challenge.lean; Challenge.lean has
+    exactly 30 `sorry` tokens
+Elaborated types: for each of the 30 compared names, the constant kind, universe parameters,
+  Expr.hash and pp.all type, printed from `import Challenge` and from `import Solution` in separate
+  environments (`lake env lean`): the two 3247-line outputs are byte-identical. The comment-stripped
+  statement text of each of the 30 theorems is character-identical in Challenge.lean and
+  Solution.lean, and that of statements 16-18 and 24-26 also in the library
+  (HardyLadder/Optimum.lean).
+Checks:
+  scripts/check_challenge_definitions.py: PASS -- no verbatim blocks and no definitions in
+    Challenge.lean (every formula written out); 30 sorry tokens / 30 compared / 30 theorem
+    declarations
+  `lake comparator --inadvisably-no-sandbox` (local, macOS; bubblewrap is Linux-only, so the
+    sandbox was disabled and the tool printed "WARNING: Sandbox disabled, this run is not
+    trustworthy."): exit 0; it exported the 30 HardyLadder.Entry names from Challenge and from
+    Solution, and printed "Lean default kernel accepts the solution" and "Your solution is okay!".
+    The sandboxed run is the preflight workflow's (request_id hardyladder1).
+  SHA256SUMS.txt: 26 files -- HardyLadder.lean, the ten library modules (OneHalf.lean after
+    Optimum.lean, Maximiser.lean last), Challenge.lean, Solution.lean, AxiomAudit.lean,
+    DefinitionAudit.lean, comparator.json, formalization.yaml, lakefile.toml, lake-manifest.json,
+    lean-toolchain, scripts/check_challenge_definitions.py, MATHLIB_DEFINITIONS.md, README.md,
+    LICENSE, .gitignore and .github/workflows/palomar-preflight.yml; BUILD.txt is not hashed.
+    `shasum -a 256 -c SHA256SUMS.txt`: all OK
+  formalization.yaml: parses; validates against the v0.4 schema (v0.4.schema.json of
+    mathlib-initiative/formalization.yaml, fetched 2026-10-29; jsonschema 4.25.1, Draft-07
+    validator) with 0 errors; 30 main_results and 30 alignment rows, in comparator.json's order
+MATHLIB_DEFINITIONS.md: 19 excerpts from the pinned Mathlib checkout with paths, line ranges and
+  permalinks, compared byte for byte on 2026-10-29 with the raw files at the pin on GitHub (19/19
+  identical; the 17 distinct permalinks answered HTTP 200); no limit, filter or supremum is written
+  in a compared statement (statement 5 uses Mathlib's HasDerivAt, whose definition is quoted).

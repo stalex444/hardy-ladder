@@ -1,0 +1,11 @@
+# Lake build products
+.lake/
+
+# Staging-only files, not part of the submitted entry
+MOCK_REFEREE_REPORT.md
+TRANSPLANT.md
+REVIEW_ROUND*.md
+README_SECTION.md
+
+# macOS
+.DS_Store
